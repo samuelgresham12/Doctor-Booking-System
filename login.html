@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src='loginscript.js'></script>
+    <script src="https://www.gstatic.com/firebasejs/7.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-firestore.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body > <br><br><br>
+    <div class='container-fluid' id='login-container' style='width:50%'>
+        <p class='display-4' id='title' style='text-align: center;'>Log In</p>
+        <p style='text-align: center;'>Doctor Booking System</p>
+        <p class='lead'>Username:</p>
+        <input type="text" class='form-control' placeholder="Username" id='lName'> <br>
+        <p class='lead'>Password:</p>
+        <input type="password" class='form-control' placeholder="Password" id='pWord'> <br>
+        <button class='btn btn-outline-success' style='width:100%' onclick='login()' id='loginButton'>Log In</button> <br> <br>
+        <button class='btn btn-outline-secondary' style='width:100%' onclick='redir_makeAcct()' id='changeAcctMode'>I Don't Have an Account</button> <br>
+        <p></p>
+    </div>
+</body>
+</html>

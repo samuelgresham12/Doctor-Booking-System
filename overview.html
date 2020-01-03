@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://www.gstatic.com/firebasejs/7.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-firestore.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src='overviewscript.js'></script>
+    <title>Overview: DBS</title>
+</head>
+<body>
+    <div class='container-fluid'>
+        <p class='display-4'>Your Overview</p><br>
+
+        <div class='row'>
+            <div class='col-sm' style="padding-right:20px; border-right: 1px solid #ccc;">
+                <b style='font-size: 16pt;'>Your Personal Details</b>
+                <div class='row'> <br>
+                    <div class='col-sm' style='text-align: right;'> <br>
+                        <b>Username:</b> <br>
+                        <b>First Name:</b> <br>
+                        <b>Last Name:</b> <br>
+                        <b>Sex:</b> <br>
+                        
+                    </div>
+                    <div class='col-sm'> <br>
+                        <div id='uName'><b id='details_uName' style='font-weight: 400;'></b></div> 
+                        <div id='fName'><b id='details_fName' style='font-weight: 400;'></b></div>
+                        <div id='lName'><b id='details_lName' style='font-weight: 400;'></b></div> 
+                        <div id='sex'><b id='details_sex' style='font-weight: 400;'></b></div> 
+                    </div>
+                    
+                </div><br>
+                <button class='btn btn-outline-primary' style='width:100%' onclick='toggleDetailsInput_toInput()' id='updateButton'>Update Personal Details</button> <br><br>
+                <button class='btn btn-outline-warning btn-sm' style='width:100%' onclick='logOut()'>Log Out</button>
+            </div>
+            <div class='col-sm' style="padding-right:20px;padding-left:20px; border-right: 1px solid #ccc;">
+                <b style='font-size: 16pt;' >Your Upcoming Bookings</b>
+                <b style='font-size: 16pt;' id='bookingsRow'><br></b>
+            	<br>
+                    
+            </div>
+            <div class='col-sm'>
+                <b style='font-size: 16pt;'>Make a New Booking</b> <br>
+                <div id='booking_show1'>
+                <b>Doctor:</b>
+                <select id="drName" class='form-control'>
+                    <option value="Dr Smith">Doctor Smith</option>
+                    <option value="Dr Scott">Doctor Scott</option>
+                </select>
+                <b>Booking Date:</b>
+                <input type="date" name="" class='form-control' id='dateSel'> <br>
+                <button class='btn btn-outline-primary' style='width:100%' onclick='findAvailableTimes()'>Find Available Times</button>
+                </div>
+                <div style='display:none' id='booking_show2'>
+                <b>Please choose a time listed below:</b> <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

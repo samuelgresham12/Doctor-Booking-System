@@ -42,12 +42,121 @@ function parseNum(num){
 
 // Updates the information on the page
 function update () {
+    //Wipe the existing data from session storage
+    sessionStorage.setItem("bSc",JSON.stringify([]));
+    sessionStorage.setItem("bSm",JSON.stringify([]));
 
-}
+    // Store the IDs and locations of each booker into session storage for future use
+    db.collection("bookings").doc(todayDate).get().then((doc)=>{
+        // Run through each booking for Dr Scott, and save it to Session Storage
+        doc.data().bookingsScott.forEach((el,ref) => {
+            let id = "bookingsScott" + ref;
+            ssAdd("bSc", el)
+        });
+        // Run through each booking for Dr Smith, and save it to Session Storage
+        doc.data().bookingsSmith.forEach((el,ref) => {
+            let id = "bookingsSmith" + ref;
+            ssAdd("bSm", el)
+        });
+        
 
-// Gets the personal details of the booker for display
-function getBookerDetails (key) {
-    db.collection("patients").doc(key).get().then( (doc) => {
-        sessionStorage.setItem(key, JSON.stringify(doc.data()))
+        // Display the patient data!
+        let bSm = JSON.parse(sessionStorage.getItem("bSm"));
+        let bSc = JSON.parse(sessionStorage.getItem("bSc"));
+
+        // Set a memory location for the patients
+        sessionStorage.setItem("bScPat",JSON.stringify([]));
+        sessionStorage.setItem("bSmPat",JSON.stringify([]))
+
+        db.collection("patients").get().then((querySnapshot) => {
+             querySnapshot.forEach((doc,ref) => {
+                if(bSm.indexOf(doc.id) >= 0){
+                    ssAdd("bSmPat",JSON.stringify({
+                        data: doc.data(),
+                        index: bSm.indexOf(doc.id)}));
+                }
+                else if(bSc.indexOf(doc.id) >= 0){
+                    ssAdd("bScPat",JSON.stringify({
+                        data: doc.data(),
+                        index: bSc.indexOf(doc.id)}));
+                }
+             })
+             display()
+        })
     })
 }
+
+// Add an item to an array in session storage
+function ssAdd(loc, newEl){
+    let temp = JSON.parse(sessionStorage.getItem(loc));
+    temp.push(newEl);
+    sessionStorage.setItem(loc, JSON.stringify(temp));
+}
+
+// Updates the page once all the data has been collected
+function display () {
+    for(i=0;i<18;i++){
+        placeBookingButton("scottBookings" + i,findPatientData(i, "scott"));
+    }
+    for(i=0;i<18;i++){
+        placeBookingButton("smithBookings" + i,findPatientData(i, "smith"));
+    }
+}
+
+function $(x){return document.getElementById(x)}
+
+function placeBookingButton (idToPlace, idOfPatient){
+    if(idOfPatient === "false"){
+        idOfPatient = "No Booking"
+    }
+    let x = document.createElement("button")
+
+    x.innerHTML = idOfPatient
+    $(idToPlace).appendChild(x)
+} 
+
+function findPatientData(time, doctor) {
+
+    if(doctor == "smith"){
+        // I honestly don't know why, but it needs to be JSON parsed twice
+        var patients = doubleParse(sessionStorage.getItem("bSmPat"));
+    } else if (doctor == "scott") {
+        var patients = doubleParse(sessionStorage.getItem("bScPat"));
+    }
+
+    let found = false;
+
+    patients = makeArray(patients)
+
+    patients.forEach(item => {
+        if (item.index == time) {
+            found = true;
+            return item.data.firstName + " " + item.data.lastName}
+    });
+    if (found == false) {
+        return "No Booking"
+    }
+}
+
+function doubleParse (JSONstring) {
+    JSONstring = JSON.parse(JSONstring);
+
+    try {
+        JSONstring = JSON.parse(JSONstring);
+        return JSONstring;
+    } catch {
+        return JSONstring;
+    }
+}
+
+function makeArray (item) {
+    if(Array.isArray(item)){
+        return item;
+    }
+    else {
+        return [item, ""]
+    }
+}
+
+// Mutiple bookings are fucked
+// Returns undefined for some strange fucking reason

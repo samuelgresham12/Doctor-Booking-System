@@ -68,7 +68,9 @@ function update () {
         sessionStorage.setItem("bScPat",JSON.stringify([]));
         sessionStorage.setItem("bSmPat",JSON.stringify([]))
 
+        // Now, the patient list is loaded
         db.collection("patients").get().then((querySnapshot) => {
+            // The patient list is iterated, and any patients that have a booking that day are added to SessionStorage
              querySnapshot.forEach((doc,ref) => {
                 if(bSm.indexOf(doc.id) >= 0){
                     ssAdd("bSmPat",JSON.stringify({
@@ -96,15 +98,19 @@ function ssAdd(loc, newEl){
 // Updates the page once all the data has been collected
 function display () {
     for(i=0;i<18;i++){
-        placeBookingButton("scottBookings" + i,findPatientData(i, "scott"));
+        let pData = findPatientData(i, "scott")
+        placeBookingButton("scottBookings" + i,pData);
     }
     for(i=0;i<18;i++){
-        placeBookingButton("smithBookings" + i,findPatientData(i, "smith"));
+        let pData = findPatientData(i, "smith")
+        placeBookingButton("smithBookings" + i,pData);
     }
 }
 
+// Just a shorthand JQuery-like function
 function $(x){return document.getElementById(x)}
 
+// Physically places the button on the page.
 function placeBookingButton (idToPlace, idOfPatient){
     if(idOfPatient === "false"){
         idOfPatient = "No Booking"
@@ -115,10 +121,11 @@ function placeBookingButton (idToPlace, idOfPatient){
     $(idToPlace).appendChild(x)
 } 
 
+// Finds patient data
 function findPatientData(time, doctor) {
 
     if(doctor == "smith"){
-        // I honestly don't know why, but it needs to be JSON parsed twice
+        // I honestly don't know why, but it needs to be JSON parsed twice, but only sometimes
         var patients = doubleParse(sessionStorage.getItem("bSmPat"));
     } else if (doctor == "scott") {
         var patients = doubleParse(sessionStorage.getItem("bScPat"));
@@ -126,29 +133,39 @@ function findPatientData(time, doctor) {
 
     let found = false;
 
-    patients = makeArray(patients)
+    patients = makeArray(patients);
 
-    patients.forEach(item => {
-        if (item.index == time) {
+    for(i=0;i<patients.length;i++){
+        if (patients[i].index == time) {
             found = true;
-            return item.data.firstName + " " + item.data.lastName}
-    });
-    if (found == false) {
-        return "No Booking"
+            //return (item.data.firstName + " " + item.data.lastName)
+            var output = "It works, goddamn! It works!"
+            
+        }
     }
-}
+        if (found == false) {
+            var output = "Nah!"
+        }
+    
+        return output
+    }
 
+
+// Sometimes the data needs to be parsed once, sometimes twice. I guess some things we will never know about this universe. Are we alone?
 function doubleParse (JSONstring) {
     JSONstring = JSON.parse(JSONstring);
 
     try {
+        // If it works and doesnt throw an error, then it's parsed again!
         JSONstring = JSON.parse(JSONstring);
         return JSONstring;
     } catch {
+        // Otherwise, we just return the once-parsed string!
         return JSONstring;
     }
 }
 
+// If something isnt an array because JS hates me, then its made into one. I know, this is terrible code but it works ok.
 function makeArray (item) {
     if(Array.isArray(item)){
         return item;

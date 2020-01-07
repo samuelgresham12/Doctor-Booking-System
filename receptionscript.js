@@ -71,21 +71,42 @@ function update () {
         // Now, the patient list is loaded
         db.collection("patients").get().then((querySnapshot) => {
             // The patient list is iterated, and any patients that have a booking that day are added to SessionStorage
-             querySnapshot.forEach((doc,ref) => {
-                if(bSm.indexOf(doc.id) >= 0){
-                    ssAdd("bSmPat",JSON.stringify({
-                        data: doc.data(),
-                        index: bSm.indexOf(doc.id)}));
+             querySnapshot.forEach((doc) => {
+                let result = checkIfIsIn(bSm.indexOf(doc.id), bSm, doc.id)
+                if(result != false){
+                    for(i=0;i<result.length; i++){
+                        ssAdd("bSmPat",JSON.stringify({
+                            data: doc.data(),
+                            index: result[i]}));
+                    }
                 }
-                else if(bSc.indexOf(doc.id) >= 0){
-                    ssAdd("bScPat",JSON.stringify({
-                        data: doc.data(),
-                        index: bSc.indexOf(doc.id)}));
+                let result2 = checkIfIsIn(bSc.indexOf(doc.id), bSc, doc.id)
+                if(result2 != false){
+                    for(i=0;i<result2.length; i++){
+                        ssAdd("bScPat",JSON.stringify({
+                            data: doc.data(),
+                            index: result2[i]}));
+                    }
                 }
              })
              display()
         })
     })
+}
+
+function checkIfIsIn(index, list, id){
+    if(index == -1){
+        return false
+    }
+    
+    let matches = [];
+
+    for(i=0;i<list.length;i++){
+        if(list[i] == id){
+            matches.push(i)
+        }
+    }
+    return matches
 }
 
 // Add an item to an array in session storage
@@ -117,6 +138,8 @@ function placeBookingButton (idToPlace, idOfPatient){
     }
     let x = document.createElement("button")
 
+    x.style = "width: 100%; "
+    x.onclick = function () {loadData(idOfPatient)}
     x.innerHTML = idOfPatient
     $(idToPlace).appendChild(x)
 } 
@@ -133,23 +156,23 @@ function findPatientData(time, doctor) {
 
     let found = false;
 
-    patients = makeArray(patients);
+    patients = makeArray(patients)
 
-    for(i=0;i<patients.length;i++){
-        if (patients[i].index == time) {
-            found = true;
+    patients.forEach(item => {
+        if (item.index == time) {
+            found = item.data;
             //return (item.data.firstName + " " + item.data.lastName)
-            var output = "It works, goddamn! It works!"
-            
         }
+    });
+    if (found == false) {
+        var output = structureTime(time) + ": No Booking"
     }
-        if (found == false) {
-            var output = "Nah!"
-        }
-    
-        return output
+    else {
+        var output = structureTime(time) + ": " + found.firstName + " " + found.lastName
     }
 
+    return output
+}
 
 // Sometimes the data needs to be parsed once, sometimes twice. I guess some things we will never know about this universe. Are we alone?
 function doubleParse (JSONstring) {
@@ -161,8 +184,13 @@ function doubleParse (JSONstring) {
         return JSONstring;
     } catch {
         // Otherwise, we just return the once-parsed string!
-        return JSONstring;
+        if(Array.isArray(JSONstring) && JSONstring.length>0) {
+            for(var i=0;i<JSONstring.length;i++){
+                JSONstring[i] = JSON.parse(JSONstring[i])
+            }
+        } return JSONstring;
     }
+
 }
 
 // If something isnt an array because JS hates me, then its made into one. I know, this is terrible code but it works ok.
@@ -175,5 +203,14 @@ function makeArray (item) {
     }
 }
 
-// Mutiple bookings are fucked
-// Returns undefined for some strange fucking reason
+function structureTime (rawTime) {
+    rawTime = (rawTime+16)/2
+    if(parseInt(rawTime)!=rawTime){
+        rawTime = parseInt(rawTime) + ":30";
+    }else{rawTime = rawTime + ":00"}
+    return rawTime
+}
+
+function loadData (name) {
+    alert(name)
+} 

@@ -138,9 +138,11 @@ function placeBookingButton (idToPlace, idOfPatient){
     }
     let x = document.createElement("button")
 
+    // Make the button the full width of the container
     x.style = "width: 100%; "
     x.onclick = function () {loadData(idOfPatient)}
     x.innerHTML = idOfPatient
+    // Chuck it on the page
     $(idToPlace).appendChild(x)
 } 
 
@@ -148,29 +150,34 @@ function placeBookingButton (idToPlace, idOfPatient){
 function findPatientData(time, doctor) {
 
     if(doctor == "smith"){
-        // I honestly don't know why, but it needs to be JSON parsed twice, but only sometimes
+        // Get the data parsed
         var patients = doubleParse(sessionStorage.getItem("bSmPat"));
     } else if (doctor == "scott") {
+        // Get the data parsed
         var patients = doubleParse(sessionStorage.getItem("bScPat"));
     }
 
     let found = false;
 
+    // Make sure its an array, otherwise the next step doesn't work
     patients = makeArray(patients)
 
+    // Go through each patient
     patients.forEach(item => {
-        if (item.index == time) {
+        if (item.index == time) { // Does the person have a booking?
             found = item.data;
             //return (item.data.firstName + " " + item.data.lastName)
         }
     });
+    // If it was never found, then output <time>: "No Booking"
     if (found == false) {
         var output = structureTime(time) + ": No Booking"
     }
+    // If a booking was found, then output <time>: <First Name> <Last Name> 
     else {
         var output = structureTime(time) + ": " + found.firstName + " " + found.lastName
     }
-
+    // Return the created string
     return output
 }
 
@@ -182,35 +189,39 @@ function doubleParse (JSONstring) {
         // If it works and doesnt throw an error, then it's parsed again!
         JSONstring = JSON.parse(JSONstring);
         return JSONstring;
-    } catch {
-        // Otherwise, we just return the once-parsed string!
-        if(Array.isArray(JSONstring) && JSONstring.length>0) {
-            for(var i=0;i<JSONstring.length;i++){
-                JSONstring[i] = JSON.parse(JSONstring[i])
+    } catch { // If it doesnt work:
+        if(Array.isArray(JSONstring) && JSONstring.length>0) { // Check if it's an array (and has length of greater than 0)
+            for(var i=0;i<JSONstring.length;i++){ // Iterate through the array and parse the entries
+                try {JSONstring[i] = JSON.parse(JSONstring[i])}
+                catch {console.error("Couldn't parse one or more entries of the array.")}
             }
         } return JSONstring;
     }
 
 }
 
-// If something isnt an array because JS hates me, then its made into one. I know, this is terrible code but it works ok.
+// If something isnt an array, then its made into one. I know, this is terrible code but it works ok.
 function makeArray (item) {
-    if(Array.isArray(item)){
+    if(Array.isArray(item)){ // If it's an array, do nothing!
         return item;
     }
-    else {
+    else { // Otherwise, make it an array with another blank entry.
         return [item, ""]
     }
 }
 
+// Takes an array index and turns it into the correct time
+// i.e. 0 --> 8:00
+//     17 --> 4:30 
 function structureTime (rawTime) {
     rawTime = (rawTime+16)/2
-    if(parseInt(rawTime)!=rawTime){
+    if(parseInt(rawTime)!=rawTime){ // If it isnt an integer, then it is at half past the hour
         rawTime = parseInt(rawTime) + ":30";
-    }else{rawTime = rawTime + ":00"}
+    }else{rawTime = rawTime + ":00"} // Otherwise, it is on the hour
     return rawTime
 }
 
+// Placeholder for function to display patient/appt data in right two columns
 function loadData (name) {
     alert(name)
 } 

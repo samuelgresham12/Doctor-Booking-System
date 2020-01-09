@@ -29,10 +29,20 @@ if (String(month).length != 2) {
 
 var todayDate = d.getFullYear() + "-" + month + "-" + day
 
-db.collection("bookings").doc(todayDate).onSnapshot(function () {
+db.collection("bookings").doc(todayDate).onSnapshot(function (doc) {
     let t = new Date();
     document.getElementById("lastUpdated").innerHTML = "Last Updated " + parseNum(t.getHours()) + ":" + parseNum(t.getMinutes()) + ":" + parseNum(t.getSeconds());
-    update();
+    if(doc.data()) { 
+        update();
+    }
+    else {
+        console.warn("No Bookings Were Found on " + todayDate)
+        swal({
+            title: "No Bookings Found...",
+            text: "Looks like a quiet day today! I couldn't find any bookings for " + todayDate + ".",
+            icon: "error"
+        })
+    }
 })
 
 function parseNum(num){
@@ -139,10 +149,12 @@ function placeBookingButton (idToPlace, idOfPatient){
     let x = document.createElement("button")
 
     // Make the button the full width of the container
-    x.style = "width: 100%; "
-    x.onclick = function () {loadData(idOfPatient)}
+    x.style = "width: 100%"
+    x.onclick = function () {loadData(idToPlace, idOfPatient)}
     x.innerHTML = idOfPatient
-    // Chuck it on the page
+    // Clear the spot where the old button was
+    $(idToPlace).innerHTML = "";
+    // Add the button to the page
     $(idToPlace).appendChild(x)
 } 
 
@@ -222,6 +234,6 @@ function structureTime (rawTime) {
 }
 
 // Placeholder for function to display patient/appt data in right two columns
-function loadData (name) {
-    alert(name)
+function loadData (loc, name) {
+    alert(loc)
 } 

@@ -239,88 +239,89 @@ function toggleDetailsInput_toDisplay() {
 
 // Finds available times given a date and doctor
 function findAvailableTimes() {
+
     let doctor = document.getElementById("drName").value;
     let date = document.getElementById("dateSel").value;
-
+    
     // Simple data validation makes sure a date is entered
     if (date == "") {
-        swal({
-            title: 'Whoops!',
-            text: "Please enter a date into the date field.",
-            icon: "error"
-        })
+            swal({
+                title: 'Whoops!',
+                text: "Please enter a date into the date field.",
+                icon: "error"
+            })
     }
-
+    
     let d = new Date();
-
+    
     if (d.getDate().length != 2) {
-        var day = d.getDate()
-        day = "0" + day;
+            var day = d.getDate()
+            day = "0" + day;
     }
-    else { var day = d.getDate() }
-
-    let month = Number(d.getMonth()) + 1;
-
-    if (String(month).length != 2) {
-        month = "0" + month;
-    }
-
-    splDate = date.split("-");
-
-    // The isBeforeNow() function is called with the day, month and year
-    let preNow = isBeforeNow(splDate[0], splDate[1], splDate[2])
-
-    // If the date selected is in the past, an error is thrown
-    if (preNow == true) {
-        swal({
-            title: "Whoops!",
-            text: "The date you entered is before today. Please input a date in the future.",
-            icon: "error"
-        }).then(function () { location.reload() });
-    }
-    else {
-
-        var docRef = db.collection("bookings").doc(date);
-
-        let freeTimes = []
-
-        // The bookings document is fetched 
-        docRef.get().then(function (doc) {
-            // If a document exists for that date, this is run
-            if (doc.exists) {
-                if (doctor == "Dr Smith") {
-                    let arr = doc.data().bookingsSmith
-                    arr.forEach(function (t, i) {
-                        if (t == "false") {
-                            freeTimes.push(i);
-                        }
+        else { var day = d.getDate() }
+    
+        let month = Number(d.getMonth()) + 1;
+    
+        if (String(month).length != 2) {
+            month = "0" + month;
+        }
+    
+        splDate = date.split("-");
+    
+        // The isBeforeNow() function is called with the day, month and year
+        let preNow = isBeforeNow(splDate[0], splDate[1], splDate[2])
+    
+        // If the date selected is in the past, an error is thrown
+        if (preNow == true) {
+            swal({
+                title: "Whoops!",
+                text: "The date you entered is before today. Please input a date in the future.",
+                icon: "error"
+            }).then(function () { location.reload() });
+        }
+        else {
+    
+            var docRef = db.collection("bookings").doc(date);
+    
+            let freeTimes = []
+    
+            // The bookings document is fetched 
+            docRef.get().then(function (doc) {
+                // If a document exists for that date, this is run
+                if (doc.exists) {
+                    if (doctor == "Dr Smith") {
+                        let arr = doc.data().bookingsSmith
+                        arr.forEach(function (t, i) {
+                            if (t == "false") {
+                                freeTimes.push(i);
+                            }
+                        })
+                    }
+                    else {
+                        let arr = doc.data().bookingsScott
+                        arr.forEach(function (t, i) {
+                            if (t == "false") {
+                                freeTimes.push(i);
+                            }
+                        })
+                    }
+    
+                    // The function is run to display the times, given the free times found,
+                    // The doctor and the date given.
+                    displayAvailTimes(freeTimes, doctor, date)
+    
+                    // If the date has no bookings, a record is created full of free timeslots
+                } else {
+                    db.collection("bookings").doc(date).set({
+                        bookingsSmith: Array(18).fill("false"),
+                        bookingsScott: Array(18).fill("false")
                     })
                 }
-                else {
-                    let arr = doc.data().bookingsScott
-                    arr.forEach(function (t, i) {
-                        if (t == "false") {
-                            freeTimes.push(i);
-                        }
-                    })
-                }
-
-                // The function is run to display the times, given the free times found,
-                // The doctor and the date given.
-                displayAvailTimes(freeTimes, doctor, date)
-
-                // If the date has no bookings, a record is created full of free timeslots
-            } else {
-                db.collection("bookings").doc(date).set({
-                    bookingsSmith: Array(18).fill("false"),
-                    bookingsScott: Array(18).fill("false")
-                })
-            }
-        })
-
-        //let nowDate = d.getFullYear() + "-" + month + "-" + day;
+            })
+    
+            //let nowDate = d.getFullYear() + "-" + month + "-" + day;
+        }
     }
-}
 
 // Checks if a given date is in the past
 function isBeforeNow(y, m, d) {

@@ -156,10 +156,10 @@ function writeNewAccount(n, p) {
     db.collection("patients").add({
         userName: n,
         password: btoa(p),
-        medicalDescription: "Not Completed!",
-        firstName: 'Not Completed!',
-        lastName: "Not Completed!",
-        sex: "Not Completed!",
+        medicalDescription: "",
+        firstName: '',
+        lastName: "",
+        sex: "",
         appts: []
     })
         // If firebase accepts the values, this is run.

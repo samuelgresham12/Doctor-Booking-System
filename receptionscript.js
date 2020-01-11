@@ -15,7 +15,7 @@ const db = firebase.firestore();
 
 let d = new Date();
 
-if (d.getDate().length != 2) {
+if (String(d.getDate()).length != 2) {
         var day = d.getDate()
         day = "0" + day;
     }

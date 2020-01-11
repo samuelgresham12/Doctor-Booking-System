@@ -36,7 +36,7 @@ db.collection("bookings").doc(todayDate).onSnapshot(function (doc) {
         update();
     }
     else {
-        console.warn("No Bookings Were Found on " + todayDate)
+        console.warn("No Bookings Were Found Today (" + todayDate + ")")
         swal({
             title: "No Bookings Found...",
             text: "Looks like a quiet day today! I couldn't find any bookings for " + todayDate + ".",
@@ -181,7 +181,7 @@ function findPatientData(time, doctor) {
             //return (item.data.firstName + " " + item.data.lastName)
         }
     });
-    // If it was never found, then output <time>: "No Booking"
+    // If it was never found, then output <time>: "No Booking" to the user
     if (found == false) {
         var output = structureTime(time) + ": No Booking"
     }

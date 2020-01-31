@@ -160,7 +160,12 @@ function writeNewAccount(n, p) {
         firstName: '',
         lastName: "",
         sex: "",
-        appts: []
+        appts: [],
+        medicareNumber: "",
+        medicarePOC: "",
+        privateHealthProvider: "",
+        privateHealthNumber: "",
+        privateHealthPOC: ""
     })
         // If firebase accepts the values, this is run.
         .then(function (docRef) {

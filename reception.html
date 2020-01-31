@@ -71,6 +71,7 @@
                     <div class='row'>
                         <div class='col-sm' style='text-align: right;'>
                             <b>Name</b>
+                            <p>Database Reference:</p>
                             <p>Patient Username:</p>
                             <p>First Name:</p>
                             <p>Last Name:</p> <br>
@@ -81,26 +82,27 @@
                             <p>Place on Card:</p> <br>
                             <b>Private Health Information:</b>
                             <p>Private Health Provider:</p>
-                            <p>Card Number:</p>
-                            <p>Place on Card:</p>
+                            <p>PH Card Number:</p>
+                            <p>PH Place on Card:</p>
                         </div>
                         <div class='col-sm'>
                             <br>
-                            <input type="text" placeholder='Username'>
-                            <input type="text" placeholder='First'>
-                            <input type="text" placeholder='Last'>
+                            <input type="text" placeholder='DB Refcode' id='field-dbref' disabled>
+                            <input type="text" placeholder='Username' id='field-username' disabled>
+                            <input type="text" placeholder='First' id='field-first'>
+                            <input type="text" placeholder='Last' id='field-last'>
                             <br><br><br>
-                            <input type="text" placeholder='Sex'>
+                            <input type="text" placeholder='Sex' id='field-sex'>
                             <br><br><br>
-                            <input type="text" placeholder="Medicare #">
-                            <input type="text" placeholder="Medicare POC">
+                            <input type="text" placeholder="Medicare #" id='field-medicarenumber'>
+                            <input type="text" placeholder="Medicare POC" id='field-medicarepoc'>
                             <br><br><br>
-                            <input type="text" placeholder="Private Health Prov.">
-                            <input type="text" placeholder="Private Health Card #">
-                            <input type="text" placeholder="Private Health POC">
-
+                            <input type="text" placeholder="Private Health Prov." id='field-privateprov'>
+                            <input type="text" placeholder="Private Health Card #" id='field-privatenum'>
+                            <input type="text" placeholder="Private Health POC" id='field-privatepoc'>
                         </div>
-                    </div>
+                    </div> <br>
+                    <button class='btn btn-outline-secondary' style='width:100%' onclick = 'updatePData()'>Update Patient Data</button>
                 </div>
                     
             </div>

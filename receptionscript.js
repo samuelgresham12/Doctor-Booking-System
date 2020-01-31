@@ -33,7 +33,7 @@ db.collection("bookings").doc(todayDate).onSnapshot(function (doc) {
     let t = new Date();
     document.getElementById("lastUpdated").innerHTML = "Last Updated " + parseNum(t.getHours()) + ":" + parseNum(t.getMinutes()) + ":" + parseNum(t.getSeconds());
     if(doc.data()) { 
-        update();
+        update(doc.data());
     }
     else {
         console.warn("No Bookings Were Found Today (" + todayDate + ")")
@@ -49,6 +49,129 @@ function parseNum(num){
     if(num<10) num = "0" + num;
     return num;
 }
+
+// This function handles updating the UI whenever:
+//      (a) the page is loaded
+//      (b) the database is updated
+function update (data) {
+    // Grab the data that was fetched in the previous function, and store it as a local variable
+    let scottBookingIds = data.bookingsScott;
+    let smithBookingIds = data.bookingsSmith;
+    
+    // Preset the length of the lists to speed up the loop
+    let smListLen = smithBookingIds.length;
+    let scListLen = scottBookingIds.length;
+
+    for(let i = 0; i < smListLen; i++) {
+        if(smithBookingIds[i] == "false") {
+            let HTMLid = "smithBookings" + i;
+            createButton(HTMLid, i, "No Booking", smithBookingIds[i])
+        }
+        else {
+            let HTMLid = "smithBookings" + i;
+            createButton(HTMLid, i, "Booked", smithBookingIds[i])
+        }
+    }
+
+    for(let i = 0; i < scListLen; i++) {
+        if(scottBookingIds[i] == "false") {
+            let HTMLid = "scottBookings" + i;
+            createButton(HTMLid, i, "No Booking", scottBookingIds[i])
+        }
+        else {
+            let HTMLid = "scottBookings" + i;
+            createButton(HTMLid, i, "Booked", scottBookingIds[i])
+        }
+    }
+    
+}
+
+function createButton (id, inc, value, bookerRef) {
+    let childButton = document.createElement("button");
+    let CSSstring = "width: 100%;"
+    if(value == "Booked") {CSSstring =  CSSstring + "background-color: lightgreen; color: darkgreen"};
+    childButton.style = CSSstring
+    childButton.id = "btn_" + id;
+    childButton.innerHTML = structureTime(inc) + ": " + value; 
+    childButton.onclick = function () {displayData(id, inc, bookerRef)}
+    document.getElementById(id).innerHTML = "";
+    document.getElementById(id).appendChild(childButton);
+}
+
+// Takes an array index and turns it into the correct time
+// i.e. 0 --> 8:00
+//     17 --> 4:30 
+function structureTime (rawTime) {
+    rawTime = (rawTime+16)/2
+    if(parseInt(rawTime)!=rawTime){ // If it isnt an integer, then it is at half past the hour
+        rawTime = parseInt(rawTime) + ":30";
+    }else{rawTime = rawTime + ":00"} // Otherwise, it is on the hour
+    return rawTime
+}
+
+function displayData (id, increment, bRef) {
+    
+    db.collection("patients").doc(bRef).get().then((doc) => {
+        if(doc.data()){
+            let d = doc.data()
+            $("field-dbref").value = doc.id;
+            $("field-username").value = d.userName;
+            $("field-first").value = d.firstName;
+            $("field-last").value = d.lastName;
+            $("field-sex").value = d.sex;
+            $("field-medicarenumber").value = d.medicareNumber;
+            $("field-medicarepoc").value = d.medicarePOC;
+            $("field-privateprov").value = d.privateHealthProvider;
+            $("field-privatenum").value = d.privateHealthNumber;
+            $("field-privatepoc").value = d.privateHealthPOC;
+
+        }
+        else {
+            $("field-dbref").value = "";
+            $("field-username").value = "";
+            $("field-first").value = "";
+            $("field-last").value = "";
+            $("field-sex").value = "";
+            $("field-medicarenumber").value = "";
+            $("field-medicarepoc").value = "";
+            $("field-privateprov").value = "";
+            $("field-privatenum").value = "";
+            $("field-privatepoc").value = "";
+        }
+    })
+} 
+
+function updatePData() {
+    if($("field-dbref").value==""){
+        swal({
+            title: "No User Selected",
+            icon: "error"
+        })
+    } else {
+        db.collection("patients").doc($("field-dbref").value).update({
+            firstName: $("field-first").value,
+            lastName: $("field-last").value,
+            sex: $("field-sex").value,
+            medicareNumber: $("field-medicarenumber").value,
+            medicarePOC: $("field-medicarepoc").value,
+            privateHealthProvider: $("field-privateprov").value,
+            privateHealthNumber: $("field-privatenum").value,
+            privateHealthPOC: $("field-privatepoc").value
+        }).then(() => {
+            swal({
+                title: "Success!",
+                icon:"success"
+            })
+        })
+    }
+}
+
+function $(x){return document.getElementById(x)}
+
+/* 
+
+**The below code was attempt #1 at fetching patient data. It worked, but was dodgy and complicated.**
+**At the end of the day, there was no way of me maintaining it (or even understanding it), so i rewrote it from scratch with better documentation and a better approach**
 
 // Updates the information on the page
 function update () {
@@ -193,7 +316,7 @@ function findPatientData(time, doctor) {
     return output
 }
 
-// Sometimes the data needs to be parsed once, sometimes twice. I guess some things we will never know about this universe. Are we alone?
+// Sometimes the data needs to be parsed once, somews twice. I guess some things we will never know about this universe. Are we alone?
 function doubleParse (JSONstring) {
     JSONstring = JSON.parse(JSONstring);
 
@@ -235,5 +358,28 @@ function structureTime (rawTime) {
 
 // Placeholder for function to display patient/appt data in right two columns
 function loadData (loc, name) {
-    alert(loc)
+    console.log(loc);
+
+    let doctor = loc.substring(0,5)
+
+
+    if(doctor == "scott"){
+        var dbRefCode = JSON.parse(sessionStorage.getItem("bSc"))[loc.substring(13)]
+    }
+    else {
+        var dbRefCode = JSON.parse(sessionStorage.getItem("bSm"))[loc.substring(13)]
+    }
+
+    if(dbRefCode == 'false'){
+        return;
+    }
+
+    db.collection("patients").doc(dbRefCode).get().then((doc) => {
+        $('field-username').value = doc.data().userName;
+        $('field-first').value = doc.data().firstName;
+        $('field-last').value = doc.data().lastName;
+        $('field-sex').value = doc.data().sex;
+    })
 } 
+
+*/

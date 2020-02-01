@@ -124,6 +124,23 @@ function displayData (id, increment, bRef) {
             $("field-privateprov").value = d.privateHealthProvider;
             $("field-privatenum").value = d.privateHealthNumber;
             $("field-privatepoc").value = d.privateHealthPOC;
+            $("field-doctor").value = "Dr. " + id.charAt(0).toUpperCase() + id.substring(1,5);
+            $("field-time").value = structureTime(increment);
+
+            db.collection("patients").doc("presentClients").get().then((doc) => {
+                if(doc) {
+                    let dLen = doc.data().list.length;
+                    found = false;
+                    for(let a = 0; a < dLen; a++) {
+                        if(doc.data().list[a] == bRef) {
+                            found = true;
+                        }
+                    }
+                }
+            }).then(() => {
+                $("field-present").value = found;
+            });
+
 
         }
         else {
@@ -137,6 +154,9 @@ function displayData (id, increment, bRef) {
             $("field-privateprov").value = "";
             $("field-privatenum").value = "";
             $("field-privatepoc").value = "";
+            $("field-doctor").value = "";
+            $("field-time").value = "";
+            $("field-present").value = "";
         }
     })
 } 
@@ -164,6 +184,24 @@ function updatePData() {
             })
         })
     }
+}
+
+// Determines whether a client has been marked present or not
+function isPresent(ref) {
+    db.collection("patients").doc("presentClients").get().then((doc) => {
+        if(doc) {
+            let dLen = doc.data().list.length;
+            var found = false;
+            for(let a = 0; a < dLen; a++) {
+                if(doc.data().list[a] == ref) {
+                    found = true;
+                }
+            }
+
+            return found;
+
+        } else {swal({title: "An error has occurred!",text:"Please contact the system administrator.",icon:"error"})}
+    })
 }
 
 function $(x){return document.getElementById(x)}

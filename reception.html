@@ -66,7 +66,7 @@
                 </div>
             </div>
             <div class='col-sm' style="padding-right:20px;padding-left:20px; border-right: 1px solid #ccc;">
-                <b style='font-size: 16pt;' >Patient's Details</b>
+                <b style='font-size: 16pt;' >Patient Details</b>
                 <div id='selPatientDetails'>
                     <div class='row'>
                         <div class='col-sm' style='text-align: right;'>
@@ -109,7 +109,23 @@
             <div class='col-sm'>
                 <b style='font-size: 16pt;'>Booking Details</b> <br>
                 <div id='selBookingDetails'>
-                    Please Select a Booking to see Booking Details
+                    <div id='selPatientDetails'>
+                        <div class='row'>
+                            <div class='col-sm' style='text-align: right;'>
+                                <b>General</b>
+                                <p>Doctor: </p>
+                                <p>Time: </p>
+                                <p>Present?</p>
+                            </div>
+                            <div class='col-sm'>
+                                <br>
+                                <input type="text" placeholder='Doctor' id='field-doctor' disabled>
+                                <input type="text" placeholder='Time' id='field-time' disabled>
+                                <input type="text" placeholder='Present?' id='field-present' disabled>
+                            </div>
+                        </div> <br>
+                        <button class='btn btn-outline-success'>Mark as Here</button>
+                    </div>
                 </div>
             </div>
         </div>

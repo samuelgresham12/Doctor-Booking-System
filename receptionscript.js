@@ -29,6 +29,7 @@ if (String(month).length != 2) {
 
 var todayDate = d.getFullYear() + "-" + month + "-" + day
 
+// When the booking data is changed on the DB, then the following code is run
 db.collection("bookings").doc(todayDate).onSnapshot(function (doc) {
     let t = new Date();
     document.getElementById("lastUpdated").innerHTML = "Last Updated " + parseNum(t.getHours()) + ":" + parseNum(t.getMinutes()) + ":" + parseNum(t.getSeconds());
@@ -36,6 +37,7 @@ db.collection("bookings").doc(todayDate).onSnapshot(function (doc) {
         update(doc.data());
     }
     else {
+        // If there are no bookings that day, a warning is thrown
         console.warn("No Bookings Were Found Today (" + todayDate + ")")
         swal({
             title: "No Bookings Found...",
@@ -45,6 +47,7 @@ db.collection("bookings").doc(todayDate).onSnapshot(function (doc) {
     }
 })
 
+// Parse a number so it is 0# rather than #
 function parseNum(num){
     if(num<10) num = "0" + num;
     return num;
@@ -62,6 +65,7 @@ function update (data) {
     let smListLen = smithBookingIds.length;
     let scListLen = scottBookingIds.length;
 
+    // For each time slot, determine whether a booking has been made
     for(let i = 0; i < smListLen; i++) {
         if(smithBookingIds[i] == "false") {
             let HTMLid = "smithBookings" + i;
@@ -72,7 +76,7 @@ function update (data) {
             createButton(HTMLid, i, "Booked", smithBookingIds[i])
         }
     }
-
+    // For each time slot, determine whether a booking has been made
     for(let i = 0; i < scListLen; i++) {
         if(scottBookingIds[i] == "false") {
             let HTMLid = "scottBookings" + i;
@@ -86,6 +90,7 @@ function update (data) {
     
 }
 
+// Manipulates the DOM to place a button on the page
 function createButton (id, inc, value, bookerRef) {
     let childButton = document.createElement("button");
     let CSSstring = "width: 100%;"
@@ -109,10 +114,11 @@ function structureTime (rawTime) {
     return rawTime
 }
 
+// When a button is pressed, this runs to display patient and booking data
 function displayData (id, increment, bRef) {
-    
+    // Fetch the document from the database
     db.collection("patients").doc(bRef).get().then((doc) => {
-        if(doc.data()){
+        if(doc.data()){ // If the data exists:
             let d = doc.data()
             $("field-dbref").value = doc.id;
             $("field-username").value = d.userName;
@@ -126,7 +132,9 @@ function displayData (id, increment, bRef) {
             $("field-privatepoc").value = d.privateHealthPOC;
             $("field-doctor").value = "Dr. " + id.charAt(0).toUpperCase() + id.substring(1,5);
             $("field-time").value = structureTime(increment);
+            $("hereButton").onclick = function(){markHere(bRef)}
 
+            // The below code checks whether the patient is present in the clinic
             db.collection("patients").doc("presentClients").get().then((doc) => {
                 if(doc) {
                     let dLen = doc.data().list.length;
@@ -139,11 +147,16 @@ function displayData (id, increment, bRef) {
                 }
             }).then(() => {
                 $("field-present").value = found;
+                if(found){ // If they are present:
+                    $("field-present").style += ";border-color:green;color:green;"
+                } else { // Otherwise:
+                    $("field-present").style += ";border-color:red;color:red;"
+                }
             });
 
 
         }
-        else {
+        else { // If that timeslot is not booked, make everything empty.
             $("field-dbref").value = "";
             $("field-username").value = "";
             $("field-first").value = "";
@@ -157,10 +170,12 @@ function displayData (id, increment, bRef) {
             $("field-doctor").value = "";
             $("field-time").value = "";
             $("field-present").value = "";
+            $("hereButton").onclick = function(){}
         }
     })
 } 
 
+// Updates the patient data 
 function updatePData() {
     if($("field-dbref").value==""){
         swal({
@@ -186,6 +201,20 @@ function updatePData() {
     }
 }
 
+// Marks a patient 'here' at the clinic in the DB
+function markHere(x) {
+    db.collection("patients").doc("presentClients").get().then((doc) => {
+        let newArr = doc.data().list;
+        newArr.push(x);
+        db.collection("patients").doc("presentClients").update({
+            list: newArr
+        })
+    }).then(()=>{ //Imitate the contents of the DB until the db has been called
+        $("field-present").value = "true";
+        $("field-present").style += ";border-color:green;color:green;"
+    })
+}
+
 // Determines whether a client has been marked present or not
 function isPresent(ref) {
     db.collection("patients").doc("presentClients").get().then((doc) => {
@@ -204,6 +233,7 @@ function isPresent(ref) {
     })
 }
 
+// The only useful bit of JQuery
 function $(x){return document.getElementById(x)}
 
 /* 

@@ -133,6 +133,7 @@ function displayData (id, increment, bRef) {
             $("field-doctor").value = "Dr. " + id.charAt(0).toUpperCase() + id.substring(1,5);
             $("field-time").value = structureTime(increment);
             $("hereButton").onclick = function(){markHere(bRef)}
+            $("awayButton").onclick = function(){checkOut(bRef)}
 
             // The below code checks whether the patient is present in the clinic
             db.collection("patients").doc("presentClients").get().then((doc) => {
@@ -171,6 +172,7 @@ function displayData (id, increment, bRef) {
             $("field-time").value = "";
             $("field-present").value = "";
             $("hereButton").onclick = function(){}
+            $("awayButton").onclick = function(){}
         }
     })
 } 
@@ -212,6 +214,28 @@ function markHere(x) {
     }).then(()=>{ //Imitate the contents of the DB until the db has been called
         $("field-present").value = "true";
         $("field-present").style += ";border-color:green;color:green;"
+    })
+}
+
+function checkOut (x) {
+    db.collection("patients").doc("presentClients").get().then((doc) => {
+        let contains = true;
+        let arr = doc.data().list;
+        while(contains) {
+            let index = arr.indexOf(x);
+            if(index > -1){
+                arr.splice(index, 1);
+            }
+            else {
+                contains = false;
+            }
+        }
+        db.collection("patients").doc("presentClients").update({
+            list: arr
+        })
+    }).then(()=>{
+        $("field-present").value = "false";
+        $("field-present").style += ";border-color:red;color:red;"
     })
 }
 

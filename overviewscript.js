@@ -28,13 +28,12 @@ db.collection("patients").doc(sessionStorage.getItem("cUser")).onSnapshot(functi
 // This function runs when the database is changed and populates the page with customised user data
 function populate() {
     // The 'found' var is used to ensure that the file for the logged in patient was found.
-    // If its not found, then an issue has occured and the user is prompted to log in again.
-    document.getElementById("bookingsRow").innerHTML = "";
+    // If its not found, then an issue has occured and the user is prompted to log in again
     let found = false;
     db.collection("patients").get().then(function (querySnapshot) {
         querySnapshot.forEach(function (doc, ind) {
             if (doc.id == sessionStorage.getItem("cUser")) {
-                // The file is marked as foudn
+                // The file is marked as found
                 found = true;
 
                 // The personal details of the patient are displayed
@@ -45,6 +44,10 @@ function populate() {
 
                 // This chunk deals with making graphics for each booking
                 var arr = doc.data().appts;
+                if(arr.length == 0) {
+                    document.getElementById("bookingsRow").innerHTML = "<br><br><p style='font-weight: 400;'><i>No Bookings Found</i><p>"
+                }
+                document.getElementById("bookingsRow").innerHTML = "";
                 arr.forEach(function (doc) {
                     let spl = doc.split("//")
 

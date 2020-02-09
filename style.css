@@ -5,14 +5,17 @@
     background-color: rgb(248, 244, 244);
 }
 
+/* Changes the colour of the login page background */
 #login-form {
     background-color: rgb(255, 255, 255);
 }
 
+/* Idk why but this makes the text work better? */
 p {
     margin-bottom: 0px;
 }
 
+/* Style for the little strip which holds the bookings */
 #bookingObj {
     border-radius: 10px;
     border: 2px solid grey;
@@ -27,6 +30,7 @@ p {
     text-align: center;
 }
 
+/* Style for the button in the bookingObj container */
 #cancelBtn {
     height: 30px;
     line-height: 15px;
@@ -41,17 +45,20 @@ p {
     transition:         background-color 0.5s, border 1s;
 }
 
+/* Change the colour and border when mouseover event is triggered */
 #cancelBtn:hover {
     background-color: rgb(255, 215, 221);
     border: 1px solid rgb(117, 0, 0);
 }
 
+/* Universal fieldstyle for <input> Makes the height of the textbox == height of normal <p> line */
 input {
     height: 18px;
     border-radius: 2px;
     border: 1px solid grey;
 }
 
+/* Each available booking is represented as this */
 .bookingButton {
     width: 100%;
     border-radius: 2px;
@@ -64,10 +71,12 @@ input {
     transition:         background-color 1s, border 1s;
 }
 
+/* When its hovered over, magic occurs. Wow! */
 .bookingButton:hover {
     background-color: rgb(166, 241, 147);
 }
 
+/* Wow i dont know what this is and i probably shouldve used a seperate class for this... */
 .col-sm {
     font-weight: 400;
     font-size: 13pt

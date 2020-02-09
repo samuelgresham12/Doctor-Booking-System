@@ -13,31 +13,38 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+
+// Fetch the date
 let d = new Date();
 
+// If the date's length is <2, then concat a 0 to the start
 if (String(d.getDate()).length != 2) {
         var day = d.getDate()
         day = "0" + day;
     }
 else { var day = d.getDate() }
 
+// Make the month number 1-based rather than 0-based
 let month = Number(d.getMonth()) + 1;
 
+// If the month's length is <2, then concat a 0 to the start
 if (String(month).length != 2) {
         month = "0" + month;
     }
 
+// Create the correct date format for database access.
 var todayDate = d.getFullYear() + "-" + month + "-" + day
 
 // When the booking data is changed on the DB, then the following code is run
 db.collection("bookings").doc(todayDate).onSnapshot(function (doc) {
     let t = new Date();
     document.getElementById("lastUpdated").innerHTML = "Last Updated " + parseNum(t.getHours()) + ":" + parseNum(t.getMinutes()) + ":" + parseNum(t.getSeconds());
+    // If the document exists on the database, then call the update() function.
     if(doc.data()) { 
         update(doc.data());
     }
+    // If the document does not exist on the database, then a warning is thrown and the user is notified
     else {
-        // If there are no bookings that day, a warning is thrown
         console.warn("No Bookings Were Found Today (" + todayDate + ")")
         swal({
             title: "No Bookings Found...",
@@ -56,8 +63,9 @@ function parseNum(num){
 // This function handles updating the UI whenever:
 //      (a) the page is loaded
 //      (b) the database is updated
+// It is called by the database listener
 function update (data) {
-    // Grab the data that was fetched in the previous function, and store it as a local variable
+    // Get the data that was passed and break it up based on each category
     let scottBookingIds = data.bookingsScott;
     let smithBookingIds = data.bookingsSmith;
     
@@ -67,10 +75,12 @@ function update (data) {
 
     // For each time slot, determine whether a booking has been made
     for(let i = 0; i < smListLen; i++) {
+        // CASE where no booking: make a blank button
         if(smithBookingIds[i] == "false") {
             let HTMLid = "smithBookings" + i;
             createButton(HTMLid, i, "No Booking", smithBookingIds[i])
         }
+        // CASE where there is a booking: make a button with "Booked" in it.
         else {
             let HTMLid = "smithBookings" + i;
             createButton(HTMLid, i, "Booked", smithBookingIds[i])
@@ -91,6 +101,7 @@ function update (data) {
 }
 
 // Manipulates the DOM to place a button on the page
+// Is passed the full id, increment, text value and booker ID
 function createButton (id, inc, value, bookerRef) {
     let childButton = document.createElement("button");
     let CSSstring = "width: 100%;"
@@ -120,6 +131,7 @@ function displayData (id, increment, bRef) {
     db.collection("patients").doc(bRef).get().then((doc) => {
         if(doc.data()){ // If the data exists:
             let d = doc.data()
+            // Fill in the fields with data from doc.data()
             $("field-dbref").value = doc.id;
             $("field-username").value = d.userName;
             $("field-first").value = d.firstName;
@@ -136,6 +148,7 @@ function displayData (id, increment, bRef) {
             $("awayButton").onclick = function(){checkOut(bRef)}
 
             // The below code checks whether the patient is present in the clinic
+            // Another DB call is required, since another collection needs to be called
             db.collection("patients").doc("presentClients").get().then((doc) => {
                 if(doc) {
                     let dLen = doc.data().list.length;
@@ -146,7 +159,7 @@ function displayData (id, increment, bRef) {
                         }
                     }
                 }
-            }).then(() => {
+            }).then(() => { // Once the data is fetched, then formatting can be applied
                 $("field-present").value = found;
                 if(found){ // If they are present:
                     $("field-present").style += ";border-color:green;color:green;"
@@ -173,18 +186,20 @@ function displayData (id, increment, bRef) {
             $("field-present").value = "";
             $("hereButton").onclick = function(){}
             $("awayButton").onclick = function(){}
+            $("field-present").style += ";border-color:grey;color:grey;"
         }
     })
 } 
 
-// Updates the patient data 
+// Updates the patient data when the button is pressed
 function updatePData() {
+    // If no database reference exists, then no user is selected and the following error is thrown 
     if($("field-dbref").value==""){
         swal({
             title: "No User Selected",
             icon: "error"
         })
-    } else {
+    } else { // Otherwise, the data is written to the database
         db.collection("patients").doc($("field-dbref").value).update({
             firstName: $("field-first").value,
             lastName: $("field-last").value,
@@ -194,7 +209,7 @@ function updatePData() {
             privateHealthProvider: $("field-privateprov").value,
             privateHealthNumber: $("field-privatenum").value,
             privateHealthPOC: $("field-privatepoc").value
-        }).then(() => {
+        }).then(() => { // Once that's done, feedback is given to the user
             swal({
                 title: "Success!",
                 icon:"success"
@@ -204,6 +219,7 @@ function updatePData() {
 }
 
 // Marks a patient 'here' at the clinic in the DB
+// Called when the 'Mark as Here' button is pressed
 function markHere(x) {
     db.collection("patients").doc("presentClients").get().then((doc) => {
         let newArr = doc.data().list;
@@ -217,6 +233,8 @@ function markHere(x) {
     })
 }
 
+// Removes the patient from the 'here' list
+// Called when the 'Mark as Away' button is pressed
 function checkOut (x) {
     db.collection("patients").doc("presentClients").get().then((doc) => {
         let contains = true;
@@ -239,6 +257,7 @@ function checkOut (x) {
     })
 }
 
+/* Unused code below ;)
 // Determines whether a client has been marked present or not
 function isPresent(ref) {
     db.collection("patients").doc("presentClients").get().then((doc) => {
@@ -256,6 +275,7 @@ function isPresent(ref) {
         } else {swal({title: "An error has occurred!",text:"Please contact the system administrator.",icon:"error"})}
     })
 }
+*/ 
 
 // The only useful bit of JQuery
 function $(x){return document.getElementById(x)}

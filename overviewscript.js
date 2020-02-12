@@ -37,10 +37,26 @@ function populate() {
                 found = true;
 
                 // The personal details of the patient are displayed
-                document.getElementById("details_uName").innerHTML = doc.data().userName;
-                document.getElementById("details_fName").innerHTML = doc.data().firstName;
-                document.getElementById("details_lName").innerHTML = doc.data().lastName;
-                document.getElementById("details_sex").innerHTML = doc.data().sex;
+                // TODO Fix Sam Martin Bug
+                if(doc.data().userName == ""){
+                    document.getElementById("details_uName").innerHTML = "<i style='color:red'>No Data</i>";
+                }
+                else {document.getElementById("details_uName").innerHTML = doc.data().userName;}
+                
+                if(doc.data().firstName == ""){
+                    document.getElementById("details_fName").innerHTML = "<i style='color:red'>No Data</i>";
+                }
+                else { document.getElementById("details_fName").innerHTML = doc.data().firstName } ;
+
+                if(doc.data().lastName == "") {
+                    document.getElementById("details_lName").innerHTML = "<i style='color:red'>No Data</i>";
+                }
+                else { document.getElementById("details_lName").innerHTML = doc.data().lastName } ;
+
+                if(doc.data().sex == ""){
+                    document.getElementById("details_sex").innerHTML = "<i style='color:red'>No Data</i>";
+                }
+                else { document.getElementById("details_sex").innerHTML = doc.data().sex } ;
 
                 // This chunk deals with making graphics for each booking
                 var arr = doc.data().appts;
@@ -127,10 +143,15 @@ function populate() {
 // This function manipulates the DOM to enable the user to change their personal details.
 function toggleDetailsInput_toInput() {
     // The values of the p fields are stored
-    let uName = document.getElementById("details_uName").innerHTML;
-    let fName = document.getElementById("details_fName").innerHTML;
-    let lName = document.getElementById("details_lName").innerHTML;
-    let sex = document.getElementById("details_sex").innerHTML;
+    let uName = document.getElementById("details_uName").innerText;
+    let fName = document.getElementById("details_fName").innerText;
+    let lName = document.getElementById("details_lName").innerText;
+    let sex = document.getElementById("details_sex").innerText;
+
+    if(uName == "No Data"){uName = ""}
+    if(fName == "No Data"){fName = ""}
+    if(lName == "No Data"){lName = ""}
+    if(sex == "No Data"){sex = ""}
 
     // Text boxes are made and given their values and IDs
     var x1 = document.createElement("INPUT");

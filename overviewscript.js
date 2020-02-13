@@ -37,7 +37,6 @@ function populate() {
                 found = true;
 
                 // The personal details of the patient are displayed
-                // TODO Fix Sam Martin Bug
                 if(doc.data().userName == ""){
                     document.getElementById("details_uName").innerHTML = "<i style='color:red'>No Data</i>";
                 }

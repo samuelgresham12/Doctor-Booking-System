@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messaging Test</title>
+    <script defer src='messaging.js'></script>
+    <script src="https://www.gstatic.com/firebasejs/7.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-firestore.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <input type='text' placeholder="messager ID" id='mID'>
+    <input type='text' placeholder="recipient ID" id='rID'>
+    <button onclick='establishCommunication()'>Start Messaging</button>
+    <button onclick='establishBackwardConnection()'>Connect Backwards</button> <br> <br>
+
+    <textarea name="" id="messages" cols="80" rows="30"></textarea> <br>
+    <input type='text' placeholder='New Message Content' id='messageContent'>
+    <button onclick='send()'>Send</button>
+
+
+</body>
+</html>

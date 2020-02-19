@@ -59,7 +59,7 @@ function establishBackwardConnection() {
         })
     }).then(()=>{
         if(commFound == true){
-            loadConversation(searchID, recipientID, initiatorID);
+            loadConversation(searchID, initiatorID, recipientID);
         }
         else {
             console.error("No Communication Found")

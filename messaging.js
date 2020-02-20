@@ -39,7 +39,7 @@ function establishCommunication() {
             loadConversation(searchID, initiatorID, recipientID);
         }
         else {
-            console.error("No Communication Found")
+            establishBackwardConnection();
         }
     })
 } 

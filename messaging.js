@@ -9,13 +9,15 @@ var firebaseConfig = {
     appId: "1:152039725858:web:69e765bfc0caae93f3637b"
 };
 
+sessionStorage.setItem("busy", false);
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 db.collection("messaging").onSnapshot(function (doc) {
     try{
-        loadConversation(sessionStorage.getItem("ID"), sessionStorage.getItem("me"), sessionStorage.getItem("nme"))
+            loadConversation(sessionStorage.getItem("ID"), sessionStorage.getItem("me"), sessionStorage.getItem("nme"))
     } catch{
         console.error("Not Working, Idiot")
     }
@@ -62,7 +64,7 @@ function establishBackwardConnection() {
             loadConversation(searchID, initiatorID, recipientID);
         }
         else {
-            console.error("No Communication Found")
+            createChat()
         }
     })
 }
@@ -75,6 +77,7 @@ function loadConversation(ID, i, r){
 
     db.collection("messaging").doc(ID).get().then((doc) => {
         let j = 0;
+        $("messages").value = "";
         while(true){
             if(doc.data()[j] != undefined){
                 $("messages").value+="\n" + doc.data()[j].sender + ": " + doc.data()[j].content;
@@ -101,10 +104,26 @@ function send() {
             }, {merge: true}).then(() => {
                 db.collection("messaging").doc(sessionStorage.getItem("ID")).set({
                     currentID: index
-                },{merge: true})
+                },{merge: true}).then(() => {$("messageContent").value = "";})
             })
         })
     }
+}
+
+function createChat() {
+    let initiatorID = document.getElementById("mID").value;
+    let recipientID = document.getElementById("rID").value;
+
+    db.collection("messaging").doc(initiatorID + "-" + recipientID).set({
+        [0]: {
+            sender: "Admin",
+            content: "Messaging Started!",
+            timeSent: Date.now()
+        },
+        currentID: 0
+    }).then(()=>{
+        establishCommunication()
+    })
 }
 
     

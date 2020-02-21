@@ -11,13 +11,15 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
-    <input type='text' placeholder="My ID" id='mID'>
-    <input type='text' placeholder="Recipient ID" id='rID'>
-    <button onclick='establishCommunication()'>Load Messages</button><br><br>
+    <div class='container-fluid'>
+        <input type='text' placeholder="My ID" id='mID'>
+        <input type='text' placeholder="Recipient ID" id='rID'>
+        <button onclick='establishCommunication()'>Load Messages</button><br><br>
 
-    <textarea name="" id="messages" cols="80" rows="30" disabled></textarea> <br>
-    <input type='text' placeholder='New Message Content' id='messageContent'>
-    <button onclick='send()'>Send</button>
+        <textarea name="" id="messages" cols="80" rows="30" disabled></textarea> <br>
+        <input type='text' placeholder='New Message Content' id='messageContent'>
+        <button onclick='send()'>Send</button>
+    </div>
 
 
 </body>

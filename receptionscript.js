@@ -257,6 +257,16 @@ function checkOut (x) {
     })
 }
 
+function openMessages() {
+    let doctor = $('field-doctor').value;
+    let patientName = $("field-first").value + " " + $("field-last").value;
+
+    sessionStorage.setItem("doctorToMessage", doctor);
+    sessionStorage.setItem("patientToMessageAbout", patientName);
+
+    window.open("docMsg.html", "", "width=800,height=1000");
+
+}
 /* Unused code below ;)
 // Determines whether a client has been marked present or not
 function isPresent(ref) {

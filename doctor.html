@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://www.gstatic.com/firebasejs/7.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-firestore.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src='doctorscript.js'></script>
+    <title>Doctor View</title>
+</head>
+<body>
+    <div class='container-fluid'>
+        <p class='display-4'>Doctor View</p><br>
+        
+        <div class='row'>
+            <div class='col-sm' style="padding-right:20px; border-right: 1px solid #ccc;">
+                <b style='font-size: 16pt;'>Today's Bookings</b>
+                <div id='lastUpdated'></div>
+                <div class='row'>
+                <div class='col-sm'>
+                    <b>Dr Scott</b>
+                    <div id='scottBookings0'></div>
+                    <div id='scottBookings1'></div>
+                    <div id='scottBookings2'></div>
+                    <div id='scottBookings3'></div>
+                    <div id='scottBookings4'></div>
+                    <div id='scottBookings5'></div>
+                    <div id='scottBookings6'></div>
+                    <div id='scottBookings7'></div>
+                    <div id='scottBookings8'></div>
+                    <div id='scottBookings9'></div>
+                    <div id='scottBookings10'></div>
+                    <div id='scottBookings11'></div>
+                    <div id='scottBookings12'></div>
+                    <div id='scottBookings13'></div>
+                    <div id='scottBookings14'></div>
+                    <div id='scottBookings15'></div>
+                    <div id='scottBookings16'></div>
+                    <div id='scottBookings17'></div>
+                </div>
+                <div class='col-sm'>
+                    <b>Dr Smith</b>
+                    <div id='smithBookings0'></div>
+                    <div id='smithBookings1'></div>
+                    <div id='smithBookings2'></div>
+                    <div id='smithBookings3'></div>
+                    <div id='smithBookings4'></div>
+                    <div id='smithBookings5'></div>
+                    <div id='smithBookings6'></div>
+                    <div id='smithBookings7'></div>
+                    <div id='smithBookings8'></div>
+                    <div id='smithBookings9'></div>
+                    <div id='smithBookings10'></div>
+                    <div id='smithBookings11'></div>
+                    <div id='smithBookings12'></div>
+                    <div id='smithBookings13'></div>
+                    <div id='smithBookings14'></div>
+                    <div id='smithBookings15'></div>
+                    <div id='smithBookings16'></div>
+                    <div id='smithBookings17'></div>
+                </div>
+                </div>
+            </div>
+            <div class='col-sm' style="padding-right:20px;padding-left:20px; border-right: 1px solid #ccc;">
+                <b style='font-size: 16pt;' >Patient Details</b>
+                <div id='selPatientDetails'>
+                    <div class='row'>
+                        <div class='col-sm' style='text-align: right;'>
+                            <b>Name</b>
+                            <p>Database Reference:</p>
+                            <p>Patient Username:</p>
+                            <p>First Name:</p>
+                            <p>Last Name:</p> <br>
+                            <b>Other Info</b>
+                            <p>Sex:</p> <br>
+                            <b>Medicare Information:</b>
+                            <p>Medicare Number:</p>
+                            <p>Place on Card:</p> <br>
+                            <b>Private Health Information:</b>
+                            <p>Private Health Provider:</p>
+                            <p>PH Card Number:</p>
+                            <p>PH Place on Card:</p>
+                        </div>
+                        <div class='col-sm'>
+                            <br>
+                            <input type="text" placeholder='DB Refcode' id='field-dbref' disabled>
+                            <input type="text" placeholder='Username' id='field-username' disabled>
+                            <input type="text" placeholder='First' id='field-first'>
+                            <input type="text" placeholder='Last' id='field-last'>
+                            <br><br><br>
+                            <input type="text" placeholder='Sex' id='field-sex'>
+                            <br><br><br>
+                            <input type="text" placeholder="Medicare #" id='field-medicarenumber'>
+                            <input type="text" placeholder="Medicare POC" id='field-medicarepoc'>
+                            <br><br><br>
+                            <input type="text" placeholder="Private Health Prov." id='field-privateprov'>
+                            <input type="text" placeholder="Private Health Card #" id='field-privatenum'>
+                            <input type="text" placeholder="Private Health POC" id='field-privatepoc'>
+                        </div>
+                    </div> <br>
+                    <button class='btn btn-outline-secondary' style='width:100%' onclick = 'updatePData()'>Update Patient Data</button>
+                </div>
+                    
+            </div>
+            <div class='col-sm'>
+                <b style='font-size: 16pt;'>Booking Details</b> <br>
+                <div id='selBookingDetails'>
+                    <div id='selPatientDetails'>
+                        <div class='row'>
+                            <div class='col-sm' style='text-align: right;'>
+                                <b>General</b>
+                                <p>Doctor: </p>
+                                <p>Time: </p>
+                                <p>Present?</p>
+                            </div>
+                            <div class='col-sm'>
+                                <br>
+                                <input type="text" placeholder='Doctor' id='field-doctor' disabled>
+                                <input type="text" placeholder='Time' id='field-time' disabled>
+                                <input type="text" placeholder='Present?' id='field-present' disabled>
+                            </div>
+                        </div> <br>
+                        <button class='btn btn-outline-success' style='width:100%' onclick='' id='hereButton' id='krishenWazHear'>Mark as Here</button>
+                        <button class='btn btn-outline-warning' style='width:100%' onclick='' id='awayButton'>Mark as Away</button>
+                        <br> <br>
+                        <button class='btn btn-outline-secondary' onclick='openMessages()'>Message the Doctor</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -153,6 +153,8 @@ function redir_loginAcct() {
 // Physically writes new accounts.
 // This is the main funciton which interfaces with firebase.
 function writeNewAccount(n, p) {
+    // Start data is written to the database. It is important that these exist, but as blank entries,
+    // since they need to be read by modules (even if they are not completed)
     db.collection("patients").add({
         userName: n,
         password: btoa(p),

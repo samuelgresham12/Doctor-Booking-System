@@ -24,6 +24,20 @@ db.collection("patients").doc(sessionStorage.getItem("cUser")).onSnapshot(functi
 })
 }
 
+function bubbleSort(a) {
+    var swapped;
+    do {
+        swapped = false;
+        for (var i=0; i < a.length-1; i++) {
+            if (a[i][0] > a[i+1][0]) {
+                var temp = a[i];
+                a[i] = a[i+1];
+                a[i+1] = temp;
+                swapped = true;
+            }
+        }
+    } while (swapped);
+}
 
 // This function runs when the database is changed and populates the page with customised user data
 function populate() {
@@ -36,7 +50,7 @@ function populate() {
                 // The file is marked as found
                 found = true;
 
-                // The personal details of the patient are displayed
+                // If the user has blank entries (i.e. has not entered their name), then a "no data" entry is made
                 if(doc.data().userName == ""){
                     document.getElementById("details_uName").innerHTML = "<i style='color:red'>No Data</i>";
                 }
@@ -62,9 +76,16 @@ function populate() {
                 if(arr.length == 0) {
                     document.getElementById("bookingsRow").innerHTML = "<br><br><p style='font-weight: 400;'><i>No Bookings Found</i><p>"
                 }
+                else {
+                    var newArr = []
+                    arr.forEach((item,id) => {
+                        newArr[id]=arr[id].split("//")
+                    })
+                    bubbleSort(newArr)
+                }
                 document.getElementById("bookingsRow").innerHTML = "";
-                arr.forEach(function (doc) {
-                    let spl = doc.split("//")
+                newArr.forEach(function (doc) {
+                    let spl = doc
 
                     // The main <div> is made with attr. ID -> bookingObj
                     let x = document.createElement("DIV");

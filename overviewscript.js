@@ -43,6 +43,7 @@ function bubbleSort(a) {
 function populate() {
     // The 'found' var is used to ensure that the file for the logged in patient was found.
     // If its not found, then an issue has occured and the user is prompted to log in again
+    document.getElementById("loadingElement").style = "display:block;"
     let found = false;
     db.collection("patients").get().then(function (querySnapshot) {
         querySnapshot.forEach(function (doc, ind) {
@@ -158,6 +159,10 @@ function populate() {
             })
         }
     })
+    setTimeout(() => {
+        document.getElementById("loadingElement").style = "display:none;"  
+    }, 300);
+    
 }
 
 // This function manipulates the DOM to enable the user to change their personal details.

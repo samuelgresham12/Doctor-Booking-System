@@ -12,123 +12,95 @@
     <script src='doctorscript.js'></script>
     <title>Doctor View</title>
 </head>
-<body>
+<body onload='clearSS()'>
     <div class='container-fluid'>
-        <p class='display-4'>Doctor View</p><br>
+        <div class='row'>
+            <div class='col-sm'>
+                <p class='display-4'>Doctor View</p>
+            </div>
+            <div class='col-sm' id='selArea'>
+                <p class='lead' style='display: inline'>Log in As:</p> <select id='docs' style='display: inline'> 
+                    <option value='sm'>Dr Smith</option>
+                    <option value='sc'>Dr Scott</option>
+                    </select> <button class="btn btn-secondary" onclick='loadDoctorData()'>Go</button>
+            </div>
+            <div class='col-sm'>
+                <p class='lead' style='text-align: right;'>Doctor Booking System</p>
+            </div>
+        </div>
         
         <div class='row'>
-            <div class='col-sm' style="padding-right:20px; border-right: 1px solid #ccc;">
-                <b style='font-size: 16pt;'>Today's Bookings</b>
-                <div id='lastUpdated'></div>
+            <div class='col-sm' style="padding-right:20px;padding-left:20px; border-right: 1px solid #ccc;">
+                <h3>Upcoming Patients</h3> <br>
                 <div class='row'>
-                <div class='col-sm'>
-                    <b>Dr Scott</b>
-                    <div id='scottBookings0'></div>
-                    <div id='scottBookings1'></div>
-                    <div id='scottBookings2'></div>
-                    <div id='scottBookings3'></div>
-                    <div id='scottBookings4'></div>
-                    <div id='scottBookings5'></div>
-                    <div id='scottBookings6'></div>
-                    <div id='scottBookings7'></div>
-                    <div id='scottBookings8'></div>
-                    <div id='scottBookings9'></div>
-                    <div id='scottBookings10'></div>
-                    <div id='scottBookings11'></div>
-                    <div id='scottBookings12'></div>
-                    <div id='scottBookings13'></div>
-                    <div id='scottBookings14'></div>
-                    <div id='scottBookings15'></div>
-                    <div id='scottBookings16'></div>
-                    <div id='scottBookings17'></div>
-                </div>
-                <div class='col-sm'>
-                    <b>Dr Smith</b>
-                    <div id='smithBookings0'></div>
-                    <div id='smithBookings1'></div>
-                    <div id='smithBookings2'></div>
-                    <div id='smithBookings3'></div>
-                    <div id='smithBookings4'></div>
-                    <div id='smithBookings5'></div>
-                    <div id='smithBookings6'></div>
-                    <div id='smithBookings7'></div>
-                    <div id='smithBookings8'></div>
-                    <div id='smithBookings9'></div>
-                    <div id='smithBookings10'></div>
-                    <div id='smithBookings11'></div>
-                    <div id='smithBookings12'></div>
-                    <div id='smithBookings13'></div>
-                    <div id='smithBookings14'></div>
-                    <div id='smithBookings15'></div>
-                    <div id='smithBookings16'></div>
-                    <div id='smithBookings17'></div>
-                </div>
+                    <div class='col-lg'>
+                    <div id='0'></div>
+                    <div id='1'></div>
+                    <div id='2'></div>
+                    <div id='3'></div>
+                    <div id='4'></div>
+                    <div id='5'></div>
+                    <div id='6'></div>
+                    <div id='7'></div>
+                    <div id='8'></div>
+                    <div id='9'></div>
+                    <div id='10'></div>
+                    <div id='11'></div>                 
+                    <div id='12'></div>
+                    <div id='13'></div>
+                    <div id='14'></div>
+                    <div id='15'></div>
+                    <div id='16'></div>
+                    <div id='17'></div>
+            </div>
+            </div>
+            </div>
+            <div class='col-sm' style="padding-right:20px;padding-left:20px; border-right: 1px solid #ccc;">
+                <h3>Appointment Data</h3>
+                <div class='row'>
+                    <div class='col-sm'>
+                        Time: <br>
+                        Doctor: <br>
+                        Present?
+                    </div> <div class='col-sm'>
+                        <input type="text" placeholder='Booking Time' id='bookingTime' disabled>
+                        <input type="text" placeholder='Doctor' id='bookingDoctor' disabled>
+                        <input type="text" placeholder='Present?' id='bookingPresent' disabled>
+                    </div>
                 </div>
             </div>
             <div class='col-sm' style="padding-right:20px;padding-left:20px; border-right: 1px solid #ccc;">
-                <b style='font-size: 16pt;' >Patient Details</b>
-                <div id='selPatientDetails'>
-                    <div class='row'>
-                        <div class='col-sm' style='text-align: right;'>
-                            <b>Name</b>
-                            <p>Database Reference:</p>
-                            <p>Patient Username:</p>
-                            <p>First Name:</p>
-                            <p>Last Name:</p> <br>
-                            <b>Other Info</b>
-                            <p>Sex:</p> <br>
-                            <b>Medicare Information:</b>
-                            <p>Medicare Number:</p>
-                            <p>Place on Card:</p> <br>
-                            <b>Private Health Information:</b>
-                            <p>Private Health Provider:</p>
-                            <p>PH Card Number:</p>
-                            <p>PH Place on Card:</p>
-                        </div>
-                        <div class='col-sm'>
-                            <br>
-                            <input type="text" placeholder='DB Refcode' id='field-dbref' disabled>
-                            <input type="text" placeholder='Username' id='field-username' disabled>
-                            <input type="text" placeholder='First' id='field-first'>
-                            <input type="text" placeholder='Last' id='field-last'>
-                            <br><br><br>
-                            <input type="text" placeholder='Sex' id='field-sex'>
-                            <br><br><br>
-                            <input type="text" placeholder="Medicare #" id='field-medicarenumber'>
-                            <input type="text" placeholder="Medicare POC" id='field-medicarepoc'>
-                            <br><br><br>
-                            <input type="text" placeholder="Private Health Prov." id='field-privateprov'>
-                            <input type="text" placeholder="Private Health Card #" id='field-privatenum'>
-                            <input type="text" placeholder="Private Health POC" id='field-privatepoc'>
-                        </div>
-                    </div> <br>
-                    <button class='btn btn-outline-secondary' style='width:100%' onclick = 'updatePData()'>Update Patient Data</button>
+                <h3>Patient Data</h3>
+                <div class='row'>
+                    <div class='col-sm'>
+                        <b>Name</b>
+                        <p>Database Reference:</p>
+                        <p>First Name:</p>
+                        <p>Last Name:</p> <br>
+                        <b>Other Info</b>
+                        <p>Sex:</p> 
+                        <p>Private Health Status:</p><br>
+                    </div> <div class='col-sm'> <br>
+                        <input type="text" placeholder='DB Refcode' id='DBREFCODE' disabled>
+                        <input type="text" placeholder='First' id='patientFirst' disabled>
+                        <input type="text" placeholder='Last' id='patientLast' disabled> <br> <br> <br>
+                        <input type="text" placeholder='Sex' id='patientSex' disabled>
+                        <input type="text" placeholder='Y/N' id='privateHealthStatus' disabled>
+                    </div>
                 </div>
+                <b>Patient Notes:</b> 
+                <p>Symptoms:</p><textarea style="width:100%;" rows="3" id='patientNotesArea-Symptoms'></textarea>
+                <p>Diagnosis:</p><textarea style="width:100%;" rows="3" id='patientNotesArea-Diagnosis'></textarea>
+                <p>Treatments:</p><textarea style="width:100%;" rows="3" id='patientNotesArea-Treatments'></textarea>
+                <button class='btn btn-outline-warning' style='width:100%' onclick=saveNotes()>Add and Finalise Patient Notes</button>
                     
             </div>
-            <div class='col-sm'>
-                <b style='font-size: 16pt;'>Booking Details</b> <br>
-                <div id='selBookingDetails'>
-                    <div id='selPatientDetails'>
-                        <div class='row'>
-                            <div class='col-sm' style='text-align: right;'>
-                                <b>General</b>
-                                <p>Doctor: </p>
-                                <p>Time: </p>
-                                <p>Present?</p>
-                            </div>
-                            <div class='col-sm'>
-                                <br>
-                                <input type="text" placeholder='Doctor' id='field-doctor' disabled>
-                                <input type="text" placeholder='Time' id='field-time' disabled>
-                                <input type="text" placeholder='Present?' id='field-present' disabled>
-                            </div>
-                        </div> <br>
-                        <button class='btn btn-outline-success' style='width:100%' onclick='' id='hereButton' id='krishenWazHear'>Mark as Here</button>
-                        <button class='btn btn-outline-warning' style='width:100%' onclick='' id='awayButton'>Mark as Away</button>
-                        <br> <br>
-                        <button class='btn btn-outline-secondary' onclick='openMessages()'>Message the Doctor</button>
-                    </div>
+
+            <div class='col-sm' style="padding-right:20px;padding-left:20px; border-right: 1px solid #ccc;">
+                <h3>Past Patient Notes</h3>
+                <p style='display:inline'>Search for </p><input type='Term' placeholder='word' style='height:35px; width: 90px' id='sTermInput'> <p style='display:inline'> in </p> <select style='height:35px' id='searchIn'><option value='symptoms'>Symptoms</option><option value='diagnosis'>Diagnosis</option><option value='treatments'>Treatments</option></select> <button style='height:40px' class='btn btn-outline-primary' onclick='searchInPatientRecords()'>Search</button>
+                <div id='medNotesContainer' style="overflow-y: auto; height: 700px">
+                    
                 </div>
             </div>
         </div>

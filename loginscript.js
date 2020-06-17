@@ -167,7 +167,8 @@ function writeNewAccount(n, p) {
         medicarePOC: "",
         privateHealthProvider: "",
         privateHealthNumber: "",
-        privateHealthPOC: ""
+        privateHealthPOC: "",
+        medicalNotes: []
     })
         // If firebase accepts the values, this is run.
         .then(function (docRef) {

@@ -265,7 +265,7 @@ function toggleDetailsInput_toDisplay() {
                         text: "Account details successfuly updated.",
                         icon: "success"
                     }).then(function () {
-                        location.reload();
+                        location.reload()                        
                     });
                 })
                 // Else, this error message is run.

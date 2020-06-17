@@ -1,3 +1,10 @@
+/*
+--     Doctor Script     --
+ - Doctor Booking System -
+
+Contains all scripting for the doctor module of Doctor Booking System.
+*/
+
 // This variable holds information relating to the database
 var firebaseConfig = {
     apiKey: "AIzaSyBU8BvuWIwGDZGkJi-YSonTnIrKKmv1FE0",
@@ -8,11 +15,6 @@ var firebaseConfig = {
     messagingSenderId: "152039725858",
     appId: "1:152039725858:web:69e765bfc0caae93f3637b"
 };
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
 
 // Fetch the date
 let d = new Date();
@@ -33,85 +35,75 @@ if (String(month).length != 2) {
     }
 
 // Create the correct date format for database access.
+// Stores it as a global var so that it can be accessed inside following modules.
 var todayDate = d.getFullYear() + "-" + month + "-" + day
 
-// When the booking data is changed on the DB, then the following code is run
-db.collection("bookings").doc(todayDate).onSnapshot(function (doc) {
-    let t = new Date();
-    document.getElementById("lastUpdated").innerHTML = "Last Updated " + parseNum(t.getHours()) + ":" + parseNum(t.getMinutes()) + ":" + parseNum(t.getSeconds());
-    // If the document exists on the database, then call the update() function.
-    if(doc.data()) { 
-        update(doc.data());
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Clears the session storage when the page is loaded
+function clearSS() {
+    sessionStorage.removeItem('doctor');
+}
+
+db.collection("bookings").doc(todayDate).onSnapshot(function (doc) { 
+    if(sessionStorage.getItem("doctor") == "Dr Smith") {
+        loadBookings("bookingsSmith");
     }
-    // If the document does not exist on the database, then a warning is thrown and the user is notified
+    else if (sessionStorage.getItem("doctor") == "Dr Scott") {
+        loadBookings("bookingsScott");
+    }
+ })
+
+// Is run upon doctor name selection
+function loadDoctorData() {
+    let dName = document.getElementById("docs").value;
+    if(dName == "sm") {
+        document.getElementById("selArea").innerHTML += "Logging You In as Dr Smith..." // Display loading message
+        sessionStorage.setItem("doctor", "Dr Smith") // Store the name of the doctor in session storage
+        loadBookings("bookingsSmith");
+    }
     else {
-        console.warn("No Bookings Were Found Today (" + todayDate + ")")
-        swal({
-            title: "No Bookings Found...",
-            text: "Looks like a quiet day today! I couldn't find any bookings for " + todayDate + ".",
-            icon: "error"
-        })
+        document.getElementById("selArea").innerHTML += "Logging You In as Dr Scott..."
+        sessionStorage.setItem("doctor", "Dr Scott")
+        loadBookings("bookingsScott");
     }
-})
-
-// Parse a number so it is 0# rather than #
-function parseNum(num){
-    if(num<10) num = "0" + num;
-    return num;
 }
 
-// This function handles updating the UI whenever:
-//      (a) the page is loaded
-//      (b) the database is updated
-// It is called by the database listener
-function update (data) {
-    // Get the data that was passed and break it up based on each category
-    let scottBookingIds = data.bookingsScott;
-    let smithBookingIds = data.bookingsSmith;
-    
-    // Preset the length of the lists to speed up the loop
-    let smListLen = smithBookingIds.length;
-    let scListLen = scottBookingIds.length;
+// Takes the doctor's DB reference and loads their respective bookings into the HTML body.
+function loadBookings(dbReference) {
 
-    // For each time slot, determine whether a booking has been made
-    for(let i = 0; i < smListLen; i++) {
-        // CASE where no booking: make a blank button
-        if(smithBookingIds[i] == "false") {
-            let HTMLid = "smithBookings" + i;
-            createButton(HTMLid, i, "No Booking", smithBookingIds[i])
+    db.collection("bookings").doc(todayDate).get().then((doc)=>{
+        // For each booking, place a button down
+        for(let i=0;i<doc.data()[dbReference].length;i++){
+            document.getElementById(i).innerHTML = "loading...";
+            let button = document.createElement("button");
+            button.innerHTML = structureTime(i) + " " + createButtonContent(doc.data()[dbReference][i])
+            button.style='width:100%;' + colourButton(doc.data()[dbReference][i])
+            button.onclick = function() {loadPatientData(doc.data()[dbReference][i], i)}
+            document.getElementById(i).innerHTML = "";
+            document.getElementById(i).appendChild(button);
         }
-        // CASE where there is a booking: make a button with "Booked" in it.
-        else {
-            let HTMLid = "smithBookings" + i;
-            createButton(HTMLid, i, "Booked", smithBookingIds[i])
-        }
-    }
-    // For each time slot, determine whether a booking has been made
-    for(let i = 0; i < scListLen; i++) {
-        if(scottBookingIds[i] == "false") {
-            let HTMLid = "scottBookings" + i;
-            createButton(HTMLid, i, "No Booking", scottBookingIds[i])
-        }
-        else {
-            let HTMLid = "scottBookings" + i;
-            createButton(HTMLid, i, "Booked", scottBookingIds[i])
-        }
-    }
-    
+    }).then(()=>{document.getElementById("selArea").innerHTML = "Logged In!"})
 }
 
-// Manipulates the DOM to place a button on the page
-// Is passed the full id, increment, text value and booker ID
-function createButton (id, inc, value, bookerRef) {
-    let childButton = document.createElement("button");
-    let CSSstring = "width: 100%;"
-    if(value == "Booked") {CSSstring =  CSSstring + "background-color: lightgreen; color: darkgreen"};
-    childButton.style = CSSstring
-    childButton.id = "btn_" + id;
-    childButton.innerHTML = structureTime(inc) + ": " + value; 
-    childButton.onclick = function () {displayData(id, inc, bookerRef)}
-    document.getElementById(id).innerHTML = "";
-    document.getElementById(id).appendChild(childButton);
+// A quick function which generates the button content. Can be changed if the patient name is to be displayed (will add lots of latency!)
+function createButtonContent(booking){
+    if(booking=="false"){
+        return "No Booking"
+    } else {
+        return "Booked"
+    }
+}
+
+// Determines the button CSS based on the booking status at that time.
+function colourButton (booking) {
+    if(booking=="false"){
+        return 'color: red'
+    } else {
+        return "color: green"
+    }
 }
 
 // Takes an array index and turns it into the correct time
@@ -125,383 +117,171 @@ function structureTime (rawTime) {
     return rawTime
 }
 
-// When a button is pressed, this runs to display patient and booking data
-function displayData (id, increment, bRef) {
-    // Fetch the document from the database
-    db.collection("patients").doc(bRef).get().then((doc) => {
-        if(doc.data()){ // If the data exists:
-            let d = doc.data()
-            // Fill in the fields with data from doc.data()
-            $("field-dbref").value = doc.id;
-            $("field-username").value = d.userName;
-            $("field-first").value = d.firstName;
-            $("field-last").value = d.lastName;
-            $("field-sex").value = d.sex;
-            $("field-medicarenumber").value = d.medicareNumber;
-            $("field-medicarepoc").value = d.medicarePOC;
-            $("field-privateprov").value = d.privateHealthProvider;
-            $("field-privatenum").value = d.privateHealthNumber;
-            $("field-privatepoc").value = d.privateHealthPOC;
-            $("field-doctor").value = "Dr. " + id.charAt(0).toUpperCase() + id.substring(1,5);
-            $("field-time").value = structureTime(increment);
-            $("hereButton").onclick = function(){markHere(bRef)}
-            $("awayButton").onclick = function(){checkOut(bRef)}
+// jQuery-like shorthand function 
+function $ (x) {return document.getElementById(x)}
 
-            // The below code checks whether the patient is present in the clinic
-            // Another DB call is required, since another collection needs to be called
-            db.collection("patients").doc("presentClients").get().then((doc) => {
-                if(doc) {
-                    let dLen = doc.data().list.length;
-                    found = false;
-                    for(let a = 0; a < dLen; a++) {
-                        if(doc.data().list[a] == bRef) {
-                            found = true;
-                        }
-                    }
-                }
-            }).then(() => { // Once the data is fetched, then formatting can be applied
-                $("field-present").value = found;
-                if(found){ // If they are present:
-                    $("field-present").style += ";border-color:green;color:green;"
-                } else { // Otherwise:
-                    $("field-present").style += ";border-color:red;color:red;"
-                }
-            });
+// Takes the patient's DB id code and their position in the list and loads their data into the fields
+function loadPatientData (patientID, listPos) {
 
+    // If the selected booking is empty (i.e. no booking exists), make everything blank
+    if(patientID == "false"){
+        $("bookingTime").value = structureTime(listPos);
+        $("bookingDoctor").value = ""
 
-        }
-        else { // If that timeslot is not booked, make everything empty.
-            $("field-dbref").value = "";
-            $("field-username").value = "";
-            $("field-first").value = "";
-            $("field-last").value = "";
-            $("field-sex").value = "";
-            $("field-medicarenumber").value = "";
-            $("field-medicarepoc").value = "";
-            $("field-privateprov").value = "";
-            $("field-privatenum").value = "";
-            $("field-privatepoc").value = "";
-            $("field-doctor").value = "";
-            $("field-time").value = "";
-            $("field-present").value = "";
-            $("hereButton").onclick = function(){}
-            $("awayButton").onclick = function(){}
-            $("field-present").style += ";border-color:grey;color:grey;"
-        }
-    })
-} 
+        $("DBREFCODE").value = ""
+        $("patientFirst").value = ""
+        $("patientLast").value = ""
+        $("patientSex").value = ""
+        $("privateHealthStatus").value = ""
 
-// Updates the patient data when the button is pressed
-function updatePData() {
-    // If no database reference exists, then no user is selected and the following error is thrown 
-    if($("field-dbref").value==""){
-        swal({
-            title: "No User Selected",
-            icon: "error"
-        })
-    } else { // Otherwise, the data is written to the database
-        db.collection("patients").doc($("field-dbref").value).update({
-            firstName: $("field-first").value,
-            lastName: $("field-last").value,
-            sex: $("field-sex").value,
-            medicareNumber: $("field-medicarenumber").value,
-            medicarePOC: $("field-medicarepoc").value,
-            privateHealthProvider: $("field-privateprov").value,
-            privateHealthNumber: $("field-privatenum").value,
-            privateHealthPOC: $("field-privatepoc").value
-        }).then(() => { // Once that's done, feedback is given to the user
-            swal({
-                title: "Success!",
-                icon:"success"
-            })
-        })
+        $("medNotesContainer").innerHTML = ""
     }
+
+    else {
+            // Fetch the data from the DB and load into the DOM
+            db.collection("patients").doc(patientID).get().then((doc)=>{
+            $("bookingTime").value = structureTime(listPos);
+            $("bookingDoctor").value = sessionStorage.getItem("doctor")
+
+            $("DBREFCODE").value = doc.id;
+            $("patientFirst").value = doc.data().firstName
+            $("patientLast").value = doc.data().lastName
+            $("patientSex").value = doc.data().sex
+            
+            // Quickly format the sex input (blue=male, pink=female, green=other/notstated)
+            if($("patientSex").value.toLowerCase() == "male") {
+                $("patientSex").style = 'color: blue;'
+            } else if ($("patientSex").value.toLowerCase() == "female") {
+                $("patientSex").style = 'color: pink;'
+            } else {
+                $("patientSex").style = 'color: green;'
+            }
+
+            // Quickly format for private health status. 
+            if(doc.data().privateHealthProvider == "") {
+                $("privateHealthStatus").value = "No Provider"
+                $("privateHealthStatus").style = "color: red"
+            } else {
+                $("privateHealthStatus").value = "Has Private Health (" + doc.data().privateHealthProvider + ")"
+                $("privateHealthStatus").style = "color: green"
+            }
+
+            
+    }).then(()=>{loadMedicalNotes(patientID)})}
 }
 
-// Marks a patient 'here' at the clinic in the DB
-// Called when the 'Mark as Here' button is pressed
-function markHere(x) {
-    db.collection("patients").doc("presentClients").get().then((doc) => {
-        let newArr = doc.data().list;
-        newArr.push(x);
-        db.collection("patients").doc("presentClients").update({
-            list: newArr
-        })
-    }).then(()=>{ //Imitate the contents of the DB until the db has been called
-        $("field-present").value = "true";
-        $("field-present").style += ";border-color:green;color:green;"
-    })
-}
-
-// Removes the patient from the 'here' list
-// Called when the 'Mark as Away' button is pressed
-function checkOut (x) {
-    db.collection("patients").doc("presentClients").get().then((doc) => {
-        let contains = true;
-        let arr = doc.data().list;
-        while(contains) {
-            let index = arr.indexOf(x);
-            if(index > -1){
-                arr.splice(index, 1);
-            }
-            else {
-                contains = false;
-            }
+// Loads the medical notes for the patient in chronological order, unfiltered
+function loadMedicalNotes(ID) {
+    // If the booking is empty, do leave blank
+    if(ID=="false") {
+        $("medNotesContainer").innerHTML = ""
+    }
+    else {
+    // Fetch the notes
+    db.collection("patients").doc(ID).get().then((doc) => {
+        $("medNotesContainer").innerHTML = ""
+        // If the length of the array is 0 (hence, no notes exist), display a message
+        if(doc.data().medicalNotes.length == 0) {
+            $("medNotesContainer").innerHTML = "<i>No Prior Medical Notes Found...</i>"
+        } else {
+            // Otherwise, go through each medical note and place it in the DOM
+            doc.data().medicalNotes.forEach((element, index) => {
+                let x = document.createElement("div");
+                let title = document.createElement("h4");
+                let symptoms = document.createElement("p");
+                let diagnosis = document.createElement("p");
+                let treatments = document.createElement("p");
+                title.innerHTML = doc.data().medicalNotes[index].datetime + "<br>"
+                symptoms.innerHTML = "<b>Symptoms: </b>"+doc.data().medicalNotes[index].symptoms
+                diagnosis.innerHTML = "<b>Diagnosis: </b>"+doc.data().medicalNotes[index].diagnosis
+                treatments.innerHTML = "<b>Treatment: </b>"+doc.data().medicalNotes[index].treatments
+                x.style.border = "thin solid black"
+                x.appendChild(title)
+                x.appendChild(symptoms)
+                x.appendChild(diagnosis)
+                x.appendChild(treatments)
+                $("medNotesContainer").appendChild(x)
+            });
         }
-        db.collection("patients").doc("presentClients").update({
-            list: arr
+    })
+}
+}
+
+function saveNotes () {
+    let d = new Date;
+    let dateTime = todayDate + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
+    let symptoms = $("patientNotesArea-Symptoms").value;
+    let diagnosis = $("patientNotesArea-Diagnosis").value;
+    let treatments = $("patientNotesArea-Treatments").value;
+
+    db.collection("patients").doc($("DBREFCODE").value).get().then((doc)=>{
+        let arr = doc.data().medicalNotes
+        arr.push({
+            datetime: dateTime,
+            symptoms: symptoms,
+            diagnosis: diagnosis,
+            treatments: treatments
         })
-    }).then(()=>{
-        $("field-present").value = "false";
-        $("field-present").style += ";border-color:red;color:red;"
+
+        db.collection("patients").doc($("DBREFCODE").value).update({
+            medicalNotes: arr
+        }).then(
+    loadMedicalNotes($("DBREFCODE").value))
     })
 }
 
-function openMessages() {
-    let doctor = $('field-doctor').value;
-    let patientName = $("field-first").value + " " + $("field-last").value;
+function searchInPatientRecords() {
+    var searchTerm = $("sTermInput").value.toLowerCase()
+    var listOfTrueRecords = []
 
-    sessionStorage.setItem("doctorToMessage", doctor);
-    sessionStorage.setItem("patientToMessageAbout", patientName);
+    if(searchTerm == ""){
+        loadMedicalNotes($("DBREFCODE").value);
+    }
 
-    window.open("docMsg.html", "", "width=800,height=1000")
-}
+    else {
+        db.collection("patients").doc($("DBREFCODE").value).get().then((doc)=>{
+            let patientRecords = doc.data().medicalNotes
+            let searchArea = $("searchIn").value;
+            
 
-/* Unused code below ;)
-// Determines whether a client has been marked present or not
-function isPresent(ref) {
-    db.collection("patients").doc("presentClients").get().then((doc) => {
-        if(doc) {
-            let dLen = doc.data().list.length;
-            var found = false;
-            for(let a = 0; a < dLen; a++) {
-                if(doc.data().list[a] == ref) {
-                    found = true;
-                }
+            patientRecords.forEach((val, index) => {
+                let contentsToSearch = val[searchArea]
+                contentsToSearch = contentsToSearch.split(" ");
+
+                contentsToSearch.forEach((word) => {
+                    if(removePunctuation(word.toLowerCase()) == searchTerm) {
+                        listOfTrueRecords.push(val)
+                    }
+                })
+            })
+            $("medNotesContainer").innerHTML = ""
+
+            if(listOfTrueRecords.length == 0){
+                $("medNotesContainer").innerHTML = "<i>No Records Contain that Word. Make sure you are searching for ONE word only, and check your spelling.</i>"
             }
-
-            return found;
-
-        } else {swal({title: "An error has occurred!",text:"Please contact the system administrator.",icon:"error"})}
-    })
-}
-*/ 
-
-// The only useful bit of JQuery
-function $(x){return document.getElementById(x)}
-
-/* 
-
-**The below code was attempt #1 at fetching patient data. It worked, but was dodgy and complicated.**
-**At the end of the day, there was no way of me maintaining it (or even understanding it), so i rewrote it from scratch with better documentation and a better approach**
-
-// Updates the information on the page
-function update () {
-    //Wipe the existing data from session storage
-    sessionStorage.setItem("bSc",JSON.stringify([]));
-    sessionStorage.setItem("bSm",JSON.stringify([]));
-
-    // Store the IDs and locations of each booker into session storage for future use
-    db.collection("bookings").doc(todayDate).get().then((doc)=>{
-        // Run through each booking for Dr Scott, and save it to Session Storage
-        doc.data().bookingsScott.forEach((el,ref) => {
-            let id = "bookingsScott" + ref;
-            ssAdd("bSc", el)
-        });
-        // Run through each booking for Dr Smith, and save it to Session Storage
-        doc.data().bookingsSmith.forEach((el,ref) => {
-            let id = "bookingsSmith" + ref;
-            ssAdd("bSm", el)
+        listOfTrueRecords.forEach((element, index) => {
+            let x = document.createElement("div");
+            let title = document.createElement("h4");
+            let symptoms = document.createElement("p");
+            let diagnosis = document.createElement("p");
+            let treatments = document.createElement("p");
+            title.innerHTML = doc.data().medicalNotes[index].datetime + "<br>"
+            symptoms.innerHTML = "<b>Symptoms: </b>"+doc.data().medicalNotes[index].symptoms
+            diagnosis.innerHTML = "<b>Diagnosis: </b>"+doc.data().medicalNotes[index].diagnosis
+            treatments.innerHTML = "<b>Treatment: </b>"+doc.data().medicalNotes[index].treatments
+            x.style.border = "thin solid black"
+            x.appendChild(title)
+            x.appendChild(symptoms)
+            x.appendChild(diagnosis)
+            x.appendChild(treatments)
+            $("medNotesContainer").appendChild(x)
         });
         
-
-        // Display the patient data!
-        let bSm = JSON.parse(sessionStorage.getItem("bSm"));
-        let bSc = JSON.parse(sessionStorage.getItem("bSc"));
-
-        // Set a memory location for the patients
-        sessionStorage.setItem("bScPat",JSON.stringify([]));
-        sessionStorage.setItem("bSmPat",JSON.stringify([]))
-
-        // Now, the patient list is loaded
-        db.collection("patients").get().then((querySnapshot) => {
-            // The patient list is iterated, and any patients that have a booking that day are added to SessionStorage
-             querySnapshot.forEach((doc) => {
-                let result = checkIfIsIn(bSm.indexOf(doc.id), bSm, doc.id)
-                if(result != false){
-                    for(i=0;i<result.length; i++){
-                        ssAdd("bSmPat",JSON.stringify({
-                            data: doc.data(),
-                            index: result[i]}));
-                    }
-                }
-                let result2 = checkIfIsIn(bSc.indexOf(doc.id), bSc, doc.id)
-                if(result2 != false){
-                    for(i=0;i<result2.length; i++){
-                        ssAdd("bScPat",JSON.stringify({
-                            data: doc.data(),
-                            index: result2[i]}));
-                    }
-                }
-             })
-             display()
         })
-    })
-}
-
-function checkIfIsIn(index, list, id){
-    if(index == -1){
-        return false
-    }
-    
-    let matches = [];
-
-    for(i=0;i<list.length;i++){
-        if(list[i] == id){
-            matches.push(i)
-        }
-    }
-    return matches
-}
-
-// Add an item to an array in session storage
-function ssAdd(loc, newEl){
-    let temp = JSON.parse(sessionStorage.getItem(loc));
-    temp.push(newEl);
-    sessionStorage.setItem(loc, JSON.stringify(temp));
-}
-
-// Updates the page once all the data has been collected
-function display () {
-    for(i=0;i<18;i++){
-        let pData = findPatientData(i, "scott")
-        placeBookingButton("scottBookings" + i,pData);
-    }
-    for(i=0;i<18;i++){
-        let pData = findPatientData(i, "smith")
-        placeBookingButton("smithBookings" + i,pData);
     }
 }
 
-// Just a shorthand JQuery-like function
-function $(x){return document.getElementById(x)}
-
-// Physically places the button on the page.
-function placeBookingButton (idToPlace, idOfPatient){
-    if(idOfPatient === "false"){
-        idOfPatient = "No Booking"
-    }
-    let x = document.createElement("button")
-
-    // Make the button the full width of the container
-    x.style = "width: 100%"
-    x.onclick = function () {loadData(idToPlace, idOfPatient)}
-    x.innerHTML = idOfPatient
-    // Clear the spot where the old button was
-    $(idToPlace).innerHTML = "";
-    // Add the button to the page
-    $(idToPlace).appendChild(x)
-} 
-
-// Finds patient data
-function findPatientData(time, doctor) {
-
-    if(doctor == "smith"){
-        // Get the data parsed
-        var patients = doubleParse(sessionStorage.getItem("bSmPat"));
-    } else if (doctor == "scott") {
-        // Get the data parsed
-        var patients = doubleParse(sessionStorage.getItem("bScPat"));
-    }
-
-    let found = false;
-
-    // Make sure its an array, otherwise the next step doesn't work
-    patients = makeArray(patients)
-
-    // Go through each patient
-    patients.forEach(item => {
-        if (item.index == time) { // Does the person have a booking?
-            found = item.data;
-            //return (item.data.firstName + " " + item.data.lastName)
-        }
-    });
-    // If it was never found, then output <time>: "No Booking" to the user
-    if (found == false) {
-        var output = structureTime(time) + ": No Booking"
-    }
-    // If a booking was found, then output <time>: <First Name> <Last Name> 
-    else {
-        var output = structureTime(time) + ": " + found.firstName + " " + found.lastName
-    }
-    // Return the created string
-    return output
+function removePunctuation(word) {
+    word = word.replace(/(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,"")
+    return word
 }
-
-// Sometimes the data needs to be parsed once, somews twice. I guess some things we will never know about this universe. Are we alone?
-function doubleParse (JSONstring) {
-    JSONstring = JSON.parse(JSONstring);
-
-    try {
-        // If it works and doesnt throw an error, then it's parsed again!
-        JSONstring = JSON.parse(JSONstring);
-        return JSONstring;
-    } catch { // If it doesnt work:
-        if(Array.isArray(JSONstring) && JSONstring.length>0) { // Check if it's an array (and has length of greater than 0)
-            for(var i=0;i<JSONstring.length;i++){ // Iterate through the array and parse the entries
-                try {JSONstring[i] = JSON.parse(JSONstring[i])}
-                catch {console.error("Couldn't parse one or more entries of the array.")}
-            }
-        } return JSONstring;
-    }
-
-}
-
-// If something isnt an array, then its made into one. I know, this is terrible code but it works ok.
-function makeArray (item) {
-    if(Array.isArray(item)){ // If it's an array, do nothing!
-        return item;
-    }
-    else { // Otherwise, make it an array with another blank entry.
-        return [item, ""]
-    }
-}
-
-// Takes an array index and turns it into the correct time
-// i.e. 0 --> 8:00
-//     17 --> 4:30 
-function structureTime (rawTime) {
-    rawTime = (rawTime+16)/2
-    if(parseInt(rawTime)!=rawTime){ // If it isnt an integer, then it is at half past the hour
-        rawTime = parseInt(rawTime) + ":30";
-    }else{rawTime = rawTime + ":00"} // Otherwise, it is on the hour
-    return rawTime
-}
-
-// Placeholder for function to display patient/appt data in right two columns
-function loadData (loc, name) {
-    console.log(loc);
-
-    let doctor = loc.substring(0,5)
-
-
-    if(doctor == "scott"){
-        var dbRefCode = JSON.parse(sessionStorage.getItem("bSc"))[loc.substring(13)]
-    }
-    else {
-        var dbRefCode = JSON.parse(sessionStorage.getItem("bSm"))[loc.substring(13)]
-    }
-
-    if(dbRefCode == 'false'){
-        return;
-    }
-
-    db.collection("patients").doc(dbRefCode).get().then((doc) => {
-        $('field-username').value = doc.data().userName;
-        $('field-first').value = doc.data().firstName;
-        $('field-last').value = doc.data().lastName;
-        $('field-sex').value = doc.data().sex;
-    })
-} 
-
-*/

@@ -58,14 +58,16 @@ db.collection("bookings").doc(todayDate).onSnapshot(function (doc) {
 
 // Is run upon doctor name selection
 function loadDoctorData() {
+    $("loginPage").style = "display:none;"
+    $("mainPage").style = "display:block;"
     let dName = document.getElementById("docs").value;
     if(dName == "sm") {
-        document.getElementById("selArea").innerHTML += "Logging You In as Dr Smith..." // Display loading message
+        document.getElementById("mainTitle").innerHTML += " - Dr Smith"
         sessionStorage.setItem("doctor", "Dr Smith") // Store the name of the doctor in session storage
         loadBookings("bookingsSmith");
     }
     else {
-        document.getElementById("selArea").innerHTML += "Logging You In as Dr Scott..."
+        document.getElementById("mainTitle").innerHTML += " - Dr Scott"
         sessionStorage.setItem("doctor", "Dr Scott")
         loadBookings("bookingsScott");
     }
@@ -248,11 +250,13 @@ function searchInPatientRecords() {
                 let contentsToSearch = val[searchArea]
                 contentsToSearch = contentsToSearch.split(" ");
 
-                contentsToSearch.forEach((word) => {
-                    if(removePunctuation(word.toLowerCase()) == searchTerm) {
+                //contentsToSearch.forEach((word) => {
+                for(i=0;i<contentsToSearch.length;i++){
+                    if(removePunctuation(contentsToSearch[i].toLowerCase()) == searchTerm) {
                         listOfTrueRecords.push(val)
+                        break;
                     }
-                })
+                }
             })
             $("medNotesContainer").innerHTML = ""
 
@@ -265,10 +269,10 @@ function searchInPatientRecords() {
             let symptoms = document.createElement("p");
             let diagnosis = document.createElement("p");
             let treatments = document.createElement("p");
-            title.innerHTML = doc.data().medicalNotes[index].datetime + "<br>"
-            symptoms.innerHTML = "<b>Symptoms: </b>"+doc.data().medicalNotes[index].symptoms
-            diagnosis.innerHTML = "<b>Diagnosis: </b>"+doc.data().medicalNotes[index].diagnosis
-            treatments.innerHTML = "<b>Treatment: </b>"+doc.data().medicalNotes[index].treatments
+            title.innerHTML = String(listOfTrueRecords[index].datetime)
+            symptoms.innerHTML = "<b>Symptoms: </b>"+listOfTrueRecords[index].symptoms
+            diagnosis.innerHTML = "<b>Diagnosis: </b>"+listOfTrueRecords[index].diagnosis
+            treatments.innerHTML = "<b>Treatment: </b>"+listOfTrueRecords[index].treatments
             x.style.border = "thin solid black"
             x.appendChild(title)
             x.appendChild(symptoms)

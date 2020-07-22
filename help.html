@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href='helpstyling.css'>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Help - User Manual</title>
+
+    <script>
+        function $(x){return document.getElementById(x)}
+        function showDoctor() {
+            $("doctorInfo").style='display:block;'
+            $("patientInfo").style='display:none;'
+            $("receptionistInfo").style='display:none;'
+            $("startContent").style='display:none;'
+            $("goBack").style='display:block;'
+        }
+
+        function showReceptionist() {
+            $("doctorInfo").style='display:none;'
+            $("patientInfo").style='display:none;'
+            $("receptionistInfo").style='display:block;'
+            $("startContent").style='display:none;'
+            $("goBack").style='display:block;'
+        }
+
+        function showPatient() {
+            $("doctorInfo").style='display:none;'
+            $("patientInfo").style='display:block;'
+            $("receptionistInfo").style='display:none;'
+            $("startContent").style='display:none;'
+            $("goBack").style='display:block;'
+        }
+
+        function reset() {
+            $("doctorInfo").style='display:none;'
+            $("patientInfo").style='display:none;'
+            $("receptionistInfo").style='display:none;'
+            $("startContent").style='display:block;'
+            $("goBack").style='display:none;'
+        }
+    </script>
+</head>
+<body>
+    <div class='container-fluid' style='text-align: center;width:50%;background-color: rgb(210, 210, 210);'>
+        <h1 class='display-1' >DBS User Manual</h1>
+        <div id='startContent'>
+            <i>To give you the best help, please let us know how you plan to use Doctor Booking System:</i> <br> <br>
+            <b>I am a...</b> <br> <br>
+            <div class='row'>
+                <div class='col-sm'><button class='btn btn-secondary' style='width:100%' onclick='showDoctor()'>Doctor</button></div>
+                <div class='col-sm'><button class='btn btn-secondary' style='width:100%' onclick='showReceptionist()'>Receptionist</button></div>
+                <div class='col-sm'><button class='btn btn-secondary' style='width:100%' onclick='showPatient()'>Patient</button></div>
+            </div>
+        </div>
+        
+        <div id='doctorInfo' style='display:none'>
+            <p class='display-4'>Information for Doctors</p>
+            <p>Using DBS as a doctor is an easy process. DBS has intentionally been designed to be both lightweight and simple, making it uncluttered and concise without losing out on important functionality.
+            <br><br> This guide will walk you through using DBS in your consults, from accessing your bookings for the day to adding detailed, organised patient notes.</p>
+
+            <b>CHAPTER 1: Using DBS</b>
+            <p>The first thing you must do in DBS is log in!</p>
+            <img src='assets/tutorial/tp1.PNG'>
+            <p>Select your name from the dropdown box, and click 'Log Me In'. No password is required, since DBS should only be accessed on secured computers! <i>It is strongly encouraged that doctors do not use DBS on their personal devices, as it is not secure!</i></p>
+            <br><p>You should now see the doctor main screen:</p>
+            <img src='assets/tutorial/tp2.PNG'>
+            <p>You have now successfuly logged in to DBS!</p>
+            <br><br>
+            <b>CHAPTER 2: Viewing Bookings</b>
+            <p>Patient bookings lie on the left hand side of the screen. Each timeslot (30mins) is a horizontal strip.</p>
+            <div class='row'>
+                <div class='col'><img src='assets/tutorial/tp3.PNG'></div>
+                <div class='col'>
+                    <p>Red rows indicate that no active booking is made at this time.</p>
+                    <p>Green rows indicate that an active booking exists at this time.</p>
+                    <p>Names are <i>not</i> shown in this strip for privacy reasons.</p>
+                    <p>Each of these entries can be clicked on to reveal more information towards the right hand side of the screen.</p>
+                </div>
+            </div>
+
+            <b>CHAPTER 3: Viewing Booking Details</b>
+            <p>To examine the details of a particular booking, press on the respective booking button. This will reveal three columns of information:</p>
+            <img src='assets/tutorial/tg1.gif'>
+            <i>GIF animation of populating the screen with booking data.</i><br>
+            <p style='text-align: left;'><b>Column 1: Booking Data</b></p>
+            <p>This column houses information regarding the administrative details of the booking.</p>
+            <p>Time is the time that the booking will occur, in 24-hour time.</p>
+            <p>Doctor is the doctor it is booked with. This should <i>always</i> have your name in it!</p>
+            <p>Present? is a beta feature which indicates whether the patient is present at the clinic or not. </p>
+
+            <p style='text-align: left;'><b>Column 2: Patient Data</b></p>
+            <p>This column houses sensitive data regarding the patient.</p>
+            <p>'DB Reference' is the technical DB refcode under which the user is stored. This can be used for troubleshooting purposes, but will not be useful in daily operations.</p>
+            <p>'First Name' and 'Last Name' pertains to the first and last names of the client.</p>
+            <p>'Sex' is the identified sex of the client.</p>
+            <p>'Priv. Health?' identifies whether the user has private health cover.</p>
+            <p>Patient Notes section will be discussed in a later chapter.</p>
+            
+            <p style='text-align: left;'><b>Column 3: Past Patient Notes</b></p>
+            <p>This holds the past notes from the patient. We will go into more detail on this in the next chapter.</p>
+
+            <b>CHAPTER 4: Patient Notes</b>
+            <p>One of the more powerful aspects of DBS is its patient notes functionality.</p>
+            <p style='text-align: left;'><b>Adding Patient Notes</b></p>
+            <p>Once a user is selected, the 'symptoms', 'diagnosis' and 'treatment' tabs can be populated. Once your notes are finlised, press 'Add and Finalise Notes'. They are now saved to the system.</p>
+            <iframe src="https://drive.google.com/file/d/1pdv1vmPQZv9hWYH-BlGhmi9rN-zwFJP4/preview" width="700" height="400"></iframe>
+
+            <p style='text-align: left;'><b>Viewing Past Patient Notes</b></p>
+            <iframe src="https://drive.google.com/file/d/1x6I2dEXXHLPEQ9gNkZF8sNGm264k-RrU/preview" width="700" height="400"></iframe>
+        </div>
+
+        <div id='receptionistInfo' style='display:none'>
+            <p class='display-4'>Information for Receptionists</p>
+            <iframe src="https://drive.google.com/file/d/1xbqVKQ6GATe5odb7Xvsp9j69ackz8xnP/preview" width="640" height="480"></iframe>
+        </div>
+
+        <div id='patientInfo' style='display:none'>
+            <p class='display-4'>Information for Patients</p>
+            <iframe src="https://drive.google.com/file/d/1FcSkUtHknMfRbkbmeiTFl4KWfW29QYLD/preview" width="750" height="400"></iframe>
+        </div>
+        
+        <br>
+        <div id='goBack' style='display:none;' onclick='reset()'><button class='btn btn-secondary' style='width:100%'>&lt- Go Back</button></div>
+        <i>© Samuel Gresham 2020</i>
+    </div> 
+    
+</body>
+</html>

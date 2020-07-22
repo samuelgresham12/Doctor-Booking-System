@@ -39,6 +39,27 @@ function bubbleSort(a) {
     } while (swapped);
 }
 
+// Fetch the date
+let d = new Date();
+
+// If the date's length is <2, then concat a 0 to the start
+if (String(d.getDate()).length != 2) {
+        var day = d.getDate()
+        day = "0" + day;
+    }
+else { var day = d.getDate() }
+
+// Make the month number 1-based rather than 0-based
+let month = Number(d.getMonth()) + 1;
+
+// If the month's length is <2, then concat a 0 to the start
+if (String(month).length != 2) {
+        month = "0" + month;
+    }
+
+// Create the correct date format for database access.
+var todayDate = d.getFullYear() + "-" + month + "-" + day
+
 // This function runs when the database is changed and populates the page with customised user data
 function populate() {
     // The 'found' var is used to ensure that the file for the logged in patient was found.
@@ -75,7 +96,7 @@ function populate() {
                 // This chunk deals with making graphics for each booking
                 var arr = doc.data().appts;
                 if(arr.length == 0) {
-                    document.getElementById("bookingsRow").innerHTML = "<br><br><p style='font-weight: 400;'><i>No Bookings Found</i><p>"
+                    document.getElementById("bookingsRow").innerHTML = "<br><br><p style='font-weight: 400;'><i>You Haven't Made Any Bookings Yet.</i><p>"
                 }
                 else {
                     var newArr = []
@@ -83,11 +104,16 @@ function populate() {
                         newArr[id]=arr[id].split("//")
                     })
                     bubbleSort(newArr)
-                }
                 document.getElementById("bookingsRow").innerHTML = "";
                 newArr.forEach(function (doc) {
                     let spl = doc
 
+                    let splitDate = spl[0].split("-")
+
+                    if(isBeforeNow(splitDate[0],splitDate[1],splitDate[2])) {
+                        console.log("Booking on " + spl[0] + " was hidden because because it is in the past...")
+                    }
+                    else {
                     // The main <div> is made with attr. ID -> bookingObj
                     let x = document.createElement("DIV");
                     x.setAttribute("id", "bookingObj");
@@ -144,8 +170,8 @@ function populate() {
                     // The entire thing is pushed onto the document, with a break following to space the elements
                     document.getElementById("bookingsRow").appendChild(x)
                     document.getElementById("bookingsRow").appendChild(document.createElement("BR"))
-                })
-            }
+                }})
+            } }
         })
         // If the relevant document was not found, then an error is thrown!
         if (found != true) {
@@ -265,13 +291,7 @@ function toggleDetailsInput_toDisplay() {
                 // If firebase accepts the values, this is run.
                 .then(function (docRef) {
                     console.log("Document successfuly updated!");
-                    swal({
-                        title: "Success!",
-                        text: "Account details successfuly updated.",
-                        icon: "success"
-                    }).then(function () {
-                        location.reload()                        
-                    });
+                    location.reload()                        
                 })
                 // Else, this error message is run.
                 .catch(function (error) {
@@ -490,43 +510,55 @@ function deleteBooking(time, doctor, date) {
         return;
     }
 
-    db.collection("bookings").doc(date).get().then(function (doc) {
-        if (doctor == "Dr Scott") {
-            var arr = doc.data().bookingsScott;
-            arr[time] = "false";
-            db.collection("bookings").doc(date).update({
-                bookingsScott: arr
+    swal({
+        title: "Are you sure?",
+        text: "Are you sure you would like to cancel this booking?",
+        icon: "warning",
+        buttons: {
+            cancel: "No",
+            Yes: true
+        }
+    }).then((value) => { 
+        if(value == "Yes") {
+            db.collection("bookings").doc(date).get().then(function (doc) {
+                if (doctor == "Dr Scott") {
+                    var arr = doc.data().bookingsScott;
+                    arr[time] = "false";
+                    db.collection("bookings").doc(date).update({
+                        bookingsScott: arr
+                    })
+                }
+                else {
+                    var arr = doc.data().bookingsSmith;
+                    arr[time] = "false";
+                    db.collection("bookings").doc(date).update({
+                        bookingsSmith: arr
+                    })
+                }
+        
+                db.collection("patients").doc(sessionStorage.getItem("cUser")).get().then(function (doc) {
+                    let appointments = doc.data().appts;
+        
+                    var obj = date + "//" + time + "//" + doctor
+        
+                    appointments.forEach(function (item, index) {
+                        if (obj == item) {
+                            appointments.splice(index, 1);
+                            db.collection("patients").doc(sessionStorage.getItem("cUser")).update({
+                                appts: appointments
+                            })
+                        }
+                    })
+                })
+        
+                
             })
         }
         else {
-            var arr = doc.data().bookingsSmith;
-            arr[time] = "false";
-            db.collection("bookings").doc(date).update({
-                bookingsSmith: arr
-            })
-        }
 
-        db.collection("patients").doc(sessionStorage.getItem("cUser")).get().then(function (doc) {
-            let appointments = doc.data().appts;
-
-            var obj = date + "//" + time + "//" + doctor
-
-            appointments.forEach(function (item, index) {
-                if (obj == item) {
-                    appointments.splice(index, 1);
-                    db.collection("patients").doc(sessionStorage.getItem("cUser")).update({
-                        appts: appointments
-                    })
                 }
-            })
-        })
-
-        swal({
-            title: "All Done",
-            text: "Your booking has been cancelled.",
-            icon: "success"
-        }).then(function () { location.reload() })
-    })
+     })
+    
 }
 
 // This function logs the user out of their session

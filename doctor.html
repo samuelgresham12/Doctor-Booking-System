@@ -13,17 +13,28 @@
     <title>Doctor View</title>
 </head>
 <body onload='clearSS()'>
-    <div class='container-fluid'>
-        <div class='row'>
-            <div class='col-sm'>
-                <p class='display-4'>Doctor View</p>
-            </div>
+    <div class='container-fluid' id='loginPage'>
+        <div class='container-fluid' id='login-container' style='width:50%'>
+            <p class='display-4' id='title' style='text-align: center;'><i>Greetings, Doc!</i> <br> Please Log In</p>
+            <p style='text-align: center;'>Doctor Booking System</p>
+            <p class='lead'>Doctor:</p>
             <div class='col-sm' id='selArea'>
-                <p class='lead' style='display: inline'>Log in As:</p> <select id='docs' style='display: inline'> 
+                <select id='docs' style='display: inline' class='form-control'> 
                     <option value='sm'>Dr Smith</option>
                     <option value='sc'>Dr Scott</option>
-                    </select> <button class="btn btn-secondary" onclick='loadDoctorData()'>Go</button>
+                </select> <br><br>
+                <button class='btn btn-outline-primary' onclick='loadDoctorData()' style='width:100%'>Log Me In</button> <br>
+                <p>DBS Doctor Module © Samuel Gresham</p>
             </div>
+            <p></p>
+        </div>
+    </div>
+    <div class='container-fluid' id='mainPage' style='display:none;'>
+        <div class='row'>
+            <div class='col-sm'>
+                <p class='display-4' id='mainTitle'>Doctor View</p>
+            </div>
+           
             <div class='col-sm'>
                 <p class='lead' style='text-align: right;'>Doctor Booking System</p>
             </div>
@@ -74,12 +85,12 @@
                 <div class='row'>
                     <div class='col-sm'>
                         <b>Name</b>
-                        <p>Database Reference:</p>
+                        <p>DB Reference:</p>
                         <p>First Name:</p>
                         <p>Last Name:</p> <br>
                         <b>Other Info</b>
                         <p>Sex:</p> 
-                        <p>Private Health Status:</p><br>
+                        <p>Priv. Health?:</p><br>
                     </div> <div class='col-sm'> <br>
                         <input type="text" placeholder='DB Refcode' id='DBREFCODE' disabled>
                         <input type="text" placeholder='First' id='patientFirst' disabled>
@@ -105,5 +116,7 @@
             </div>
         </div>
     </div>
+
+   
 </body>
 </html>

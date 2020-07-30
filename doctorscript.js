@@ -135,41 +135,66 @@ function loadPatientData (patientID, listPos) {
         $("patientLast").value = ""
         $("patientSex").value = ""
         $("privateHealthStatus").value = ""
+        $("bookingPresent").style = ""
+        $("bookingPresent").value = ""
+
 
         $("medNotesContainer").innerHTML = ""
     }
-
+    // If a legitimate booking is selected, load the data
     else {
             // Fetch the data from the DB and load into the DOM
             db.collection("patients").doc(patientID).get().then((doc)=>{
-            $("bookingTime").value = structureTime(listPos);
-            $("bookingDoctor").value = sessionStorage.getItem("doctor")
+                $("bookingTime").value = structureTime(listPos);
+                $("bookingDoctor").value = sessionStorage.getItem("doctor")
 
-            $("DBREFCODE").value = doc.id;
-            $("patientFirst").value = doc.data().firstName
-            $("patientLast").value = doc.data().lastName
-            $("patientSex").value = doc.data().sex
+                $("DBREFCODE").value = doc.id;
+                $("patientFirst").value = doc.data().firstName
+                $("patientLast").value = doc.data().lastName
+                $("patientSex").value = doc.data().sex
             
             // Quickly format the sex input (blue=male, pink=female, green=other/notstated)
-            if($("patientSex").value.toLowerCase() == "male") {
-                $("patientSex").style = 'color: blue;'
-            } else if ($("patientSex").value.toLowerCase() == "female") {
-                $("patientSex").style = 'color: pink;'
-            } else {
-                $("patientSex").style = 'color: green;'
-            }
+                if($("patientSex").value.toLowerCase() == "male") {
+                    $("patientSex").style = 'color: blue;'
+                } else if ($("patientSex").value.toLowerCase() == "female") {
+                    $("patientSex").style = 'color: pink;'
+                } else {
+                    $("patientSex").style = 'color: green;'
+                }
 
-            // Quickly format for private health status. 
-            if(doc.data().privateHealthProvider == "") {
-                $("privateHealthStatus").value = "No Provider"
-                $("privateHealthStatus").style = "color: red"
-            } else {
-                $("privateHealthStatus").value = "Has Private Health (" + doc.data().privateHealthProvider + ")"
-                $("privateHealthStatus").style = "color: green"
-            }
+                // Quickly format for private health status. 
+                if(doc.data().privateHealthProvider == "") {
+                    $("privateHealthStatus").value = "No Provider"
+                    $("privateHealthStatus").style = "color: red"
+                } else {
+                    $("privateHealthStatus").value = "Has Private Health (" + doc.data().privateHealthProvider + ")"
+                    $("privateHealthStatus").style = "color: green"
+                }
 
             
-    }).then(()=>{loadMedicalNotes(patientID)})}
+    }).then(()=>{
+        // The below code checks whether the patient is present in the clinic
+            // Another DB call is required, since another collection needs to be called
+            db.collection("patients").doc("presentClients").get().then((doc) => {
+                if(doc) {
+                    let dLen = doc.data().list.length;
+                    found = false;
+                    for(let a = 0; a < dLen; a++) {
+                        if(doc.data().list[a] == $("DBREFCODE").value) {
+                            found = true;
+                        }
+                    }
+                }
+            }).then(() => { // Once the data is fetched, then formatting can be applied
+                $("bookingPresent").value = found;
+                if(found){ // If they are present:
+                    $("bookingPresent").style += ";border-color:green;color:green;"
+                } else { // Otherwise:
+                    $("bookingPresent").style += ";border-color:red;color:red;"
+                }
+            });
+        // Once the data is loaded into the body, then load the patient's past medical notes
+        loadMedicalNotes(patientID)})}
 }
 
 // Loads the medical notes for the patient in chronological order, unfiltered

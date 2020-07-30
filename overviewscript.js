@@ -107,13 +107,14 @@ function populate() {
                 document.getElementById("bookingsRow").innerHTML = "";
                 newArr.forEach(function (doc) {
                     let spl = doc
-
+                    let count = 0;
                     let splitDate = spl[0].split("-")
 
                     if(isBeforeNow(splitDate[0],splitDate[1],splitDate[2])) {
                         console.log("Booking on " + spl[0] + " was hidden because because it is in the past...")
                     }
                     else {
+                    count ++
                     // The main <div> is made with attr. ID -> bookingObj
                     let x = document.createElement("DIV");
                     x.setAttribute("id", "bookingObj");
@@ -170,6 +171,10 @@ function populate() {
                     // The entire thing is pushed onto the document, with a break following to space the elements
                     document.getElementById("bookingsRow").appendChild(x)
                     document.getElementById("bookingsRow").appendChild(document.createElement("BR"))
+
+                    if(count ==0) {
+                        document.getElementById("bookingsRow").innerHTML = "<br><br><p style='font-weight: 400;'><i>You Do Not Have Any Upcoming Bookings.</i><p>"
+                    }
                 }})
             } }
         })

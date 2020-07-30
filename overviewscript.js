@@ -209,26 +209,40 @@ function toggleDetailsInput_toInput() {
     if(lName == "No Data"){lName = ""}
     if(sex == "No Data"){sex = ""}
 
-    // Text boxes are made and given their values and IDs
+    // text boxes are made for each input element
     var x1 = document.createElement("INPUT");
     var x2 = document.createElement("INPUT");
     var x3 = document.createElement("INPUT");
-    var x4 = document.createElement("INPUT");
-    var x5 = document.createElement("INPUT");
+    var x4s = document.createElement("SELECT");
+    // The type and id of each input element is assigned
     x1.setAttribute("type", "text");
     x1.setAttribute("id", "x1");
     x2.setAttribute("type", "text");
     x2.setAttribute("id", "x2");
     x3.setAttribute("type", "text");
     x3.setAttribute("id", "x3");
-    x4.setAttribute("type", "text");
-    x4.setAttribute("id", "x4");
-    x5.setAttribute("type", "text");
-    x5.setAttribute("id", "x5");
+    x4s.setAttribute("name", "sex");
+    x4s.setAttribute("id", "x4");
+    // The value stored in DB is now placed into the box
     x1.setAttribute("value", uName);
     x2.setAttribute("value", fName);
     x3.setAttribute("value", lName);
-    x4.setAttribute("value", sex);
+    // Inner elements of the dropdown box are now created
+    let child1 = document.createElement("option");
+    let child2 = document.createElement("option");
+    let child3 = document.createElement("option");
+    child1.setAttribute("value", "Male")
+    child2.setAttribute("value", "Female")
+    child3.setAttribute("value", "Other")
+    child1.innerHTML = "Male"
+    child2.innerHTML = "Female"
+    child3.innerHTML = "Other"
+    // The inner elements are appended to the dropdown box
+    x4s.appendChild(child1)
+    x4s.appendChild(child2)
+    x4s.appendChild(child3)
+    // The dropdown is given the appropriate width
+    x4s.setAttribute("style", "width:205px")
 
     // The buttons are placed in the DOM
     document.getElementById("details_uName").innerHTML = "";
@@ -241,7 +255,7 @@ function toggleDetailsInput_toInput() {
     document.getElementById("lName").appendChild(x3);
 
     document.getElementById("details_sex").innerHTML = "";
-    document.getElementById("sex").appendChild(x4);
+    document.getElementById("sex").appendChild(x4s);
 
 
     // The button is finally changed
@@ -249,6 +263,7 @@ function toggleDetailsInput_toInput() {
     document.getElementById("updateButton").innerHTML = "Submit Changes";
     document.getElementById("updateButton").setAttribute("class", "btn btn-outline-danger");
 
+    document.getElementById("x4").value = sex
 }
 
 // This function saves the changes the user has made to their personal data

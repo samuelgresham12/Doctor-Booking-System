@@ -21,6 +21,7 @@
             $("doctorInfo").style='display:block;'
             $("patientInfo").style='display:none;'
             $("receptionistInfo").style='display:none;'
+            $("techInfo").style='display:none;'
             $("startContent").style='display:none;'
             $("goBack").style='display:block;'
         }
@@ -29,6 +30,7 @@
             $("doctorInfo").style='display:none;'
             $("patientInfo").style='display:none;'
             $("receptionistInfo").style='display:block;'
+            $("techInfo").style='display:none;'
             $("startContent").style='display:none;'
             $("goBack").style='display:block;'
         }
@@ -37,7 +39,17 @@
             $("doctorInfo").style='display:none;'
             $("patientInfo").style='display:block;'
             $("receptionistInfo").style='display:none;'
+            $("techInfo").style='display:none;'
             $("startContent").style='display:none;'
+            $("goBack").style='display:block;'
+        }
+
+        function showTech() {
+            $("doctorInfo").style='display:none;'
+            $("patientInfo").style='display:none;'
+            $("receptionistInfo").style='display:none;'
+            $("startContent").style='display:none;'
+            $("techInfo").style='display:block;'
             $("goBack").style='display:block;'
         }
 
@@ -45,6 +57,7 @@
             $("doctorInfo").style='display:none;'
             $("patientInfo").style='display:none;'
             $("receptionistInfo").style='display:none;'
+            $("techInfo").style='display:none;'
             $("startContent").style='display:block;'
             $("goBack").style='display:none;'
         }
@@ -60,6 +73,7 @@
                 <div class='col-sm'><button class='btn btn-secondary' style='width:100%' onclick='showDoctor()'>Doctor</button></div>
                 <div class='col-sm'><button class='btn btn-secondary' style='width:100%' onclick='showReceptionist()'>Receptionist</button></div>
                 <div class='col-sm'><button class='btn btn-secondary' style='width:100%' onclick='showPatient()'>Patient</button></div>
+                <div class='col-sm'><button class='btn btn-secondary' style='width:100%' onclick='showTech()'>Technician</button></div>
             </div>
         </div>
         
@@ -127,6 +141,14 @@
         <div id='patientInfo' style='display:none'>
             <p class='display-4'>Information for Patients</p>
             <iframe src="https://drive.google.com/file/d/1FcSkUtHknMfRbkbmeiTFl4KWfW29QYLD/preview" width="750" height="400"></iframe>
+        </div>
+
+        <div id='techInfo' style='display:none'>
+            <p class='display-4'>Technical Information</p>
+            <b>How Data is Stored in DBS</b>
+            <iframe src="https://drive.google.com/file/d/1u0nJgpa1WuHYKZbC_TEITByzCCw7zObB/preview" width="640" height="480"></iframe> <br>
+            <b>How Each Module Interracts</b>
+            <iframe src="https://drive.google.com/file/d/1ZDGrzEzGRZFLR3KdTFfetzC9nhv1rW7T/preview" width="640" height="480"></iframe>
         </div>
         
         <br>

@@ -5,6 +5,8 @@
 Contains all scripting for the doctor module of Doctor Booking System.
 */
 
+
+
 // This variable holds information relating to the database
 var firebaseConfig = {
     apiKey: "AIzaSyBU8BvuWIwGDZGkJi-YSonTnIrKKmv1FE0",
@@ -41,6 +43,10 @@ var todayDate = d.getFullYear() + "-" + month + "-" + day
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+db.collection("patients").doc(document.getElementById("DBREFCODE").value).onSnapshot(function () {
+    loadPatientData(document.getElementById("DBREFCODE").value,0)
+})
 
 // Clears the session storage when the page is loaded
 function clearSS() {
@@ -125,12 +131,16 @@ function $ (x) {return document.getElementById(x)}
 // Takes the patient's DB id code and their position in the list and loads their data into the fields
 function loadPatientData (patientID, listPos) {
 
+    if(patientID == "none") {
+        return;
+    }
+
     // If the selected booking is empty (i.e. no booking exists), make everything blank
     if(patientID == "false"){
         $("bookingTime").value = structureTime(listPos);
         $("bookingDoctor").value = ""
 
-        $("DBREFCODE").value = ""
+        $("DBREFCODE").value = "none"
         $("patientFirst").value = ""
         $("patientLast").value = ""
         $("patientSex").value = ""
@@ -192,9 +202,10 @@ function loadPatientData (patientID, listPos) {
                 } else { // Otherwise:
                     $("bookingPresent").style += ";border-color:red;color:red;"
                 }
-            });
+            })
         // Once the data is loaded into the body, then load the patient's past medical notes
-        loadMedicalNotes(patientID)})}
+        loadMedicalNotes(patientID)
+    })}
 }
 
 // Loads the medical notes for the patient in chronological order, unfiltered
@@ -234,6 +245,7 @@ function loadMedicalNotes(ID) {
 }
 }
 
+// This routine is run when 
 function saveNotes () {
     let d = new Date;
     let dateTime = todayDate + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
@@ -252,8 +264,12 @@ function saveNotes () {
 
         db.collection("patients").doc($("DBREFCODE").value).update({
             medicalNotes: arr
-        }).then(
-    loadMedicalNotes($("DBREFCODE").value))
+        }).then (() => {
+            $("patientNotesArea-Symptoms").value = "";
+            $("patientNotesArea-Diagnosis").value = "";
+            $("patientNotesArea-Treatments").value = "";
+            loadMedicalNotes($("DBREFCODE").value)
+        })
     })
 }
 

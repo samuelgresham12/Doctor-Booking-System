@@ -16,7 +16,7 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-    <script src='doctorscript.js'></script>
+    <script defer src='doctorscript.js'></script>
     <title>Doctor View</title>
 </head>
 <body onload='clearSS()'>
@@ -99,7 +99,7 @@
                         <p>Sex:</p> 
                         <p>Priv. Health?:</p><br>
                     </div> <div class='col-sm'> <br>
-                        <input type="text" placeholder='DB Refcode' id='DBREFCODE' disabled>
+                        <input type="text" placeholder='DB Refcode' id='DBREFCODE' value="none" disabled>
                         <input type="text" placeholder='First' id='patientFirst' disabled>
                         <input type="text" placeholder='Last' id='patientLast' disabled> <br> <br> <br>
                         <input type="text" placeholder='Sex' id='patientSex' disabled>
@@ -116,7 +116,16 @@
 
             <div class='col-sm' style="padding-right:20px;padding-left:20px; border-right: 1px solid #ccc;">
                 <h3>Past Patient Notes</h3>
-                <p style='display:inline'>Search for </p><input type='Term' placeholder='word' style='height:35px; width: 90px' id='sTermInput'> <p style='display:inline'> in </p> <select style='height:35px' id='searchIn'><option value='symptoms'>Symptoms</option><option value='diagnosis'>Diagnosis</option><option value='treatments'>Treatments</option></select> <button style='height:40px' class='btn btn-outline-primary' onclick='searchInPatientRecords()'>Search</button>
+                <div id='search'>
+                    <p style='display:inline'>Search for </p><input type='Term' placeholder='word' style='height:35px; width: 150px' id='sTermInput'> 
+                    <p style='display:inline'> in </p> <select style='height:35px' id='searchIn'><option value='symptoms'>Symptoms</option><option value='diagnosis'>Diagnosis</option><option value='treatments'>Treatments</option></select> <br> <br>
+                    <div class='row'>
+                        <div class='col-sm'> <button class='btn btn-outline-danger' onclick='loadMedicalNotes(document.getElementById("DBREFCODE").value)' style='height:40px; width:100%'>Show All Records</button></div>
+                        <div class='col-sm'> <button style='height:40px; width:100%' class='btn btn-outline-primary' onclick='searchInPatientRecords()' >Search</button> </div>
+                    </div>
+                </div>
+                
+                
                 <div id='medNotesContainer' style="overflow-y: auto; height: 700px">
                     
                 </div>

@@ -103,3 +103,9 @@ input {
     width: 210px;
     height: 250px;
 }
+
+#search {
+    border-radius: 2px;
+    border: 1px solid grey;
+    padding: 5px
+}

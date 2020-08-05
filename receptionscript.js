@@ -13,7 +13,6 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-
 // Fetch the date
 let d = new Date();
 
@@ -190,6 +189,7 @@ function displayData (id, increment, bRef) {
         }
     })
 } 
+
 
 // Updates the patient data when the button is pressed
 function updatePData() {

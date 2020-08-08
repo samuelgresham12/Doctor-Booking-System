@@ -24,6 +24,7 @@ db.collection("patients").doc(sessionStorage.getItem("cUser")).onSnapshot(functi
 })
 }
 
+// Sorts bookings based on date
 function bubbleSort(a) {
     var swapped;
     do {

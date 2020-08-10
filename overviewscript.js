@@ -38,6 +38,8 @@ function bubbleSort(a) {
             }
         }
     } while (swapped);
+
+    return a;
 }
 
 // Fetch the date
@@ -104,7 +106,9 @@ function populate() {
                     arr.forEach((item,id) => {
                         newArr[id]=arr[id].split("//")
                     })
-                    bubbleSort(newArr)
+                    console.log(newArr)
+                    newArr = bubbleSort(newArr)
+                    console.log(newArr)
                 document.getElementById("bookingsRow").innerHTML = "";
                 newArr.forEach(function (doc) {
                     let spl = doc
@@ -588,4 +592,148 @@ function logOut() {
     sessionStorage.removeItem("cUser");
     // Login page is opened
     window.open("login.html", "_self")
+}
+
+// Searches the user's bookings for a specific date using both a bubble sort and a binary search 
+function searchBookings() {
+    db.collection("patients").doc(sessionStorage.getItem("cUser")).get().then((doc) => {
+        bookings = doc.data().appts;
+
+        for(let i=0; i<bookings.length; i++){ 
+            bookings[i] = bookings[i].split("//")
+        }
+
+        bookings = bubbleSort(bookings);
+        let target = document.getElementById("searchCriteria_date").value;
+        let length = bookings.length
+
+        let index = binarySearch(bookings,target,0,length)
+
+        let list = [];
+        
+        for(let i=0; i<index.length;i++) {
+            list[i]= bookings[index[i]]
+        }
+
+        populate_forSearch(list)
+        
+        
+    })
+}
+
+// A binary search algorithm which is used in the appointment search function
+// It is adapted to allow for return of multiple records
+function binarySearch(array, target, low, high) {
+    if(high-low<0) {
+        return -1;
+    }
+
+    let mid = Math.floor((low+high)/2);
+
+    if(array[mid][0] == target) {
+        return checkBoundaries(mid,target, array);
+    } else if(target < array[mid][0]) {
+        return binarySearch(array, target, low, mid-1);
+    } else if(target > array[mid][0]) {
+        return binarySearch(array, target, mid+1, high);
+    }
+}
+
+function checkBoundaries (initial, target, array) {
+    let highExhausted = false;
+    let lowExhausted = false; 
+
+    let indexList = [initial]
+
+    let counter = 1;
+
+    while(!highExhausted) {
+        if(array[initial+counter][0] == target) {
+            indexList.push(initial+counter);
+            counter ++
+        } else {highExhausted=true};
+    }
+    counter = 1
+    while(!lowExhausted) {
+        if(array[initial-counter][0] == target) {
+            indexList.push(initial-counter);
+            counter ++
+        } else {lowExhausted=true};
+    }
+
+    return indexList;
+}
+
+function populate_forSearch(listOfIndexes) {
+    document.getElementById("bookingsRow").innerHTML = "<i>Search Results...</i>"
+    listOfIndexes.forEach(function (doc) {
+        let spl = doc
+        let count = 0;
+
+        if(false) {
+            console.log("Booking on " + spl[0] + " was hidden because because it is in the past...")
+        }
+        else {
+        count ++
+        // The main <div> is made with attr. ID -> bookingObj
+        let x = document.createElement("DIV");
+        x.setAttribute("id", "bookingObj");
+
+        // The row is made for the columns to sit within
+        let y1 = document.createElement("DIV");
+        y1.setAttribute("class", "row");
+
+        // The individual <div> elements are created
+        let z1 = document.createElement("DIV");
+        let z2 = document.createElement("DIV");
+        let z3 = document.createElement("DIV");
+        let z4 = document.createElement("DIV")
+
+        // The <div> elements are given attr. CLASS -> col-sm 
+        // This makes them act as column containers
+        z1.setAttribute("class", "col-sm");
+        z2.setAttribute("class", "col-sm");
+        z3.setAttribute("class", "col-sm");
+        z4.setAttribute("class", "col-sm");
+
+        // The button is made, with:
+        //      attr. ID -> cancelBtn
+        //      attr. onclick -> deleteBooking function
+        let b = document.createElement("BUTTON");
+        b.setAttribute("id", "cancelBtn");
+        b.onclick = function () { deleteBooking(spl[1], spl[2], spl[0]) }
+
+        let timeF = (Number(spl[1]) + 16) / 2;
+        if (!Number.isInteger(timeF)) {
+            timeF = Math.floor(timeF) + ":30";
+        }
+        else {
+            timeF = timeF + ":00"
+        }
+        // The text values of each item are updated
+        z1.innerHTML = spl[2];
+        z2.innerHTML = timeF
+        z3.innerHTML = spl[0];
+        b.innerHTML = "Cancel";
+
+        // The button is pushed into its DIV
+        z4.appendChild(b)
+
+        // The DIVs are pushed into the row DIV
+        y1.appendChild(z1)
+        y1.appendChild(z2)
+        y1.appendChild(z3)
+        y1.appendChild(z4)
+
+        // The row DIV is pushed into the parent DIV
+        x.appendChild(y1)
+
+        // The entire thing is pushed onto the document, with a break following to space the elements
+        document.getElementById("bookingsRow").appendChild(x)
+        document.getElementById("bookingsRow").appendChild(document.createElement("BR"))
+
+        if(count ==0) {
+            document.getElementById("bookingsRow").innerHTML = "<br><br><p style='font-weight: 400;'><i>You Do Not Have Any Upcoming Bookings.</i><p>"
+        }
+    }})
 }

@@ -47,8 +47,17 @@
             </div>
             <div class='col-sm' style="padding-right:20px;padding-left:20px; border-right: 1px solid #ccc;">
                 <b style='font-size: 16pt;' >Your Upcoming Bookings</b> <br> 
-                <i>Upcoming bookings, sorted by date...</i> <br> <br>
-                <b style='font-size: 16pt;' id='bookingsRow'><br></b>
+                <div class='container fluid' id='search'>
+                    <b>Search by Date</b> <br>
+                    <input type='date' class='form-control' id='searchCriteria_date'></select> <br>
+                    <div class='row'>
+                        <div class='col-sm'><button class='btn btn-outline-secondary' style='width:100%' onclick='populate()'>Clear Search</button></div>
+                        <div class='col-sm'><button class='btn btn-outline-success' style='width:100%' onclick='searchBookings()'>Search</button></div>
+                    </div>
+                    
+
+                </div> <br> 
+                <div style='font-size: 16pt; overflow-y: auto; overflow-x:hidden; height: 55%' id='bookingsRow' ><br></div>
             	<br>
                     
             </div>

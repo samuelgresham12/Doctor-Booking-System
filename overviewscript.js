@@ -345,6 +345,8 @@ function findAvailableTimes() {
                 icon: "error"
             })
     }
+
+    // Structures the date nicely for use with the DB
     
     let d = new Date();
     
@@ -511,6 +513,7 @@ function selectBooking(time, doctor, date) {
                     })
                 }
 
+                // Push the booking into the patient's record
                 db.collection("patients").doc(sessionStorage.getItem("cUser")).get().then((doc) => {
                     var arr = doc.data().appts
                     arr.push(date + "//" + time + "//" + doctor)
@@ -529,12 +532,14 @@ function selectBooking(time, doctor, date) {
     })
 }
 
+// Deletes a booking from the DBS database
 function deleteBooking(time, doctor, date) {
     if (time == "" || doctor == "" || date == "") {
         console.error("Error: parameters undefined.");
         return;
     }
 
+    // The user is prompted to confirm their intent
     swal({
         title: "Are you sure?",
         text: "Are you sure you would like to cancel this booking?",
@@ -548,25 +553,31 @@ function deleteBooking(time, doctor, date) {
             db.collection("bookings").doc(date).get().then(function (doc) {
                 if (doctor == "Dr Scott") {
                     var arr = doc.data().bookingsScott;
+                    // Set the booking status to false
                     arr[time] = "false";
+                    // Update within the database
                     db.collection("bookings").doc(date).update({
                         bookingsScott: arr
                     })
                 }
                 else {
                     var arr = doc.data().bookingsSmith;
+                    // Set the booking status to false
                     arr[time] = "false";
+                    // Update within the database
                     db.collection("bookings").doc(date).update({
                         bookingsSmith: arr
                     })
                 }
         
+                // This section removes the booking from the PATIENT file
                 db.collection("patients").doc(sessionStorage.getItem("cUser")).get().then(function (doc) {
                     let appointments = doc.data().appts;
         
                     var obj = date + "//" + time + "//" + doctor
         
                     appointments.forEach(function (item, index) {
+                        // If it matches the booking which is being deleted, remove it from the database
                         if (obj == item) {
                             appointments.splice(index, 1);
                             db.collection("patients").doc(sessionStorage.getItem("cUser")).update({
@@ -599,10 +610,12 @@ function searchBookings() {
             bookings[i] = bookings[i].split("//")
         }
 
+        // Sort the bookings
         bookings = bubbleSort(bookings);
         let target = document.getElementById("searchCriteria_date").value;
         let length = bookings.length
 
+        // Find the indices for which the criterion is satisfied
         let index = binarySearch(bookings,target,0,length)
 
         let list = [];
@@ -635,6 +648,8 @@ function binarySearch(array, target, low, high) {
     }
 }
 
+// this function checks above and below the found record to see if there are multiple instances of the same thing in the array
+// This allows for the binary search to return multile indices!
 function checkBoundaries (initial, target, array) {
     let highExhausted = false;
     let lowExhausted = false; 
@@ -643,6 +658,7 @@ function checkBoundaries (initial, target, array) {
 
     let counter = 1;
 
+    // Look ABOVE the record and see if there are any more matches
     while(!highExhausted) {
         if(array[initial+counter][0] == target) {
             indexList.push(initial+counter);
@@ -650,6 +666,7 @@ function checkBoundaries (initial, target, array) {
         } else {highExhausted=true};
     }
     counter = 1
+    // Look BELOW the record now
     while(!lowExhausted) {
         if(array[initial-counter][0] == target) {
             indexList.push(initial-counter);
@@ -660,6 +677,7 @@ function checkBoundaries (initial, target, array) {
     return indexList;
 }
 
+// Populates the booking area after a search has been performed
 function populate_forSearch(listOfIndexes) {
     document.getElementById("bookingsRow").innerHTML = "<i>Search Results...</i>"
     listOfIndexes.forEach(function (doc) {

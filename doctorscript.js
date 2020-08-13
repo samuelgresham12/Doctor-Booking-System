@@ -245,14 +245,16 @@ function loadMedicalNotes(ID) {
 }
 }
 
-// This routine is run when 
+// This routine is run when the notes are to be finalised and saved. 
 function saveNotes () {
+    // The date and time is generated
     let d = new Date;
     let dateTime = todayDate + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
     let symptoms = $("patientNotesArea-Symptoms").value;
     let diagnosis = $("patientNotesArea-Diagnosis").value;
     let treatments = $("patientNotesArea-Treatments").value;
 
+    // The existing data is fetched from the database
     db.collection("patients").doc($("DBREFCODE").value).get().then((doc)=>{
         let arr = doc.data().medicalNotes
         arr.push({
@@ -262,6 +264,7 @@ function saveNotes () {
             treatments: treatments
         })
 
+        // The data is saved and fields cleared
         db.collection("patients").doc($("DBREFCODE").value).update({
             medicalNotes: arr
         }).then (() => {
@@ -273,20 +276,24 @@ function saveNotes () {
     })
 }
 
+// This function searches for a word in the patient records using a linear search 
 function searchInPatientRecords() {
     var searchTerm = $("sTermInput").value.toLowerCase()
     var listOfTrueRecords = []
 
+    // If the search term is empty, load the documents as normal
     if(searchTerm == ""){
         loadMedicalNotes($("DBREFCODE").value);
     }
 
     else {
+        // Get all records from the database
         db.collection("patients").doc($("DBREFCODE").value).get().then((doc)=>{
             let patientRecords = doc.data().medicalNotes
             let searchArea = $("searchIn").value;
             
 
+            // Go through each record and see if it contains the search term
             patientRecords.forEach((val, index) => {
                 let contentsToSearch = val[searchArea]
                 contentsToSearch = contentsToSearch.split(" ");
@@ -301,9 +308,11 @@ function searchInPatientRecords() {
             })
             $("medNotesContainer").innerHTML = ""
 
+            // If no results are found, display an error message.
             if(listOfTrueRecords.length == 0){
-                $("medNotesContainer").innerHTML = "<i>No Records Contain that Word. Make sure you are searching for ONE word only, and check your spelling.</i>"
+                $("medNotesContainer").innerHTML = "<i>No records contain that term! Make sure you are searching for ONE word only, and check your spelling.</i>"
             }
+            // For each record which satisfies the condition, place it on the DOM 
         listOfTrueRecords.forEach((element, index) => {
             let x = document.createElement("div");
             let title = document.createElement("h4");
@@ -326,6 +335,7 @@ function searchInPatientRecords() {
     }
 }
 
+// Removes punctuation from the search string
 function removePunctuation(word) {
     word = word.replace(/(~|`|!|@|#|$|%|^|&|\*|\(|\)|{|}|\[|\]|;|:|\"|'|<|,|\.|>|\?|\/|\\|\||-|_|\+|=)/g,"")
     return word

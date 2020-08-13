@@ -575,13 +575,9 @@ function deleteBooking(time, doctor, date) {
                         }
                     })
                 })
-        
-                
             })
         }
-        else {
-
-                }
+        else {}
      })
     
 }
@@ -671,7 +667,7 @@ function populate_forSearch(listOfIndexes) {
         let count = 0;
 
         if(false) {
-            console.log("Booking on " + spl[0] + " was hidden because because it is in the past...")
+        //    console.log("Booking on " + spl[0] + " was hidden because because it is in the past...")
         }
         else {
         count ++
